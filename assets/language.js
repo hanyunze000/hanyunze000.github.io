@@ -3,29 +3,20 @@ const alternateEdition = languageLink.getAttribute("href");
 const header = document.querySelector(".masthead");
 const navLinks = [...document.querySelectorAll(".section-nav a")];
 const readingAnchors = [...document.querySelectorAll(
-  "main section[id], main article[id], #contact, #publications, #chinese-publications"
+  "main section[id], main article[id], #contact"
 )].reverse();
-const collections = [...document.querySelectorAll("details.collection")];
-const defaultPanels = collections.filter(item => item.open).map(item => item.id).join(",");
 
 new ResizeObserver(() => {
   document.documentElement.style.setProperty("--masthead-height", header.getBoundingClientRect().height + "px");
 }).observe(header);
 
-function revealBookmark(preservePanel = false) {
-  const target = document.getElementById(location.hash.slice(1));
-  if (!target) return;
-  if (preservePanel && target.matches("details.collection")) return;
-  let disclosure = target.closest("details");
-  let opened = false;
-  while (disclosure) {
-    if (!disclosure.open) {
-      disclosure.open = true;
-      opened = true;
-    }
-    disclosure = disclosure.parentElement.closest("details");
-  }
-  if (opened) target.scrollIntoView({behavior: "instant"});
+function restorePublicationBookmark() {
+  if (!["#chinese-publications", "#international-publications", "#international-publications-heading"].includes(location.hash)) return;
+  const url = new URL(location.href);
+  url.hash = "publications";
+  url.searchParams.delete("open");
+  history.replaceState(history.state, "", url);
+  document.getElementById("publications").scrollIntoView({behavior: "instant"});
 }
 
 function updateNavigation() {
@@ -51,17 +42,7 @@ function updateLanguageLink() {
   const url = new URL(alternateEdition, location.href);
   const anchor = readingAnchor();
   if (anchor) url.hash = anchor.id;
-  const expanded = collections.filter(item => item.open).map(item => item.id).join(",");
-  if (expanded !== defaultPanels || collections.includes(anchor)) {
-    url.searchParams.set("open", expanded);
-  }
   languageLink.href = url.href;
-}
-
-const requested = new URLSearchParams(location.search).get("open");
-for (const disclosure of collections) {
-  if (requested !== null) disclosure.open = requested.split(",").includes(disclosure.id);
-  disclosure.addEventListener("toggle", updateLanguageLink);
 }
 
 let pending = false;
@@ -76,8 +57,8 @@ function scheduleUpdate() {
 }
 window.addEventListener("scroll", scheduleUpdate, {passive: true});
 window.addEventListener("resize", scheduleUpdate);
-window.addEventListener("hashchange", () => { revealBookmark(); scheduleUpdate(); });
+window.addEventListener("hashchange", () => { restorePublicationBookmark(); scheduleUpdate(); });
 window.addEventListener("pageshow", scheduleUpdate);
 languageLink.addEventListener("click", updateLanguageLink);
-revealBookmark(requested !== null);
+restorePublicationBookmark();
 scheduleUpdate();

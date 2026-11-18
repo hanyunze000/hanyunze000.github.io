@@ -1,6 +1,5 @@
 """Create the English public CV from the same academic record as the website."""
 
-import os
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -8,9 +7,6 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import HRFlowable, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 import profile_data as p
@@ -48,6 +44,10 @@ def para(text, kind="body"):
     return Paragraph(text, STYLES[kind])
 
 
+def paper_section(title, papers):
+    return para(f'{title} <font name="Helvetica" size="10.5" color="{MUTED}">({len(papers)})</font>', "section")
+
+
 def link(label, url):
     return f'<link href="{escape(url)}" color="{GREEN}"><u>{escape(label)}</u></link>'
 
@@ -77,29 +77,6 @@ def paper_flowables(item):
         lines.extend([Spacer(1, 6), para(escape(en(item["summary"])))])
     lines.append(Spacer(1, 14))
     return KeepTogether(lines)
-
-
-def chinese_papers():
-    font_file = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts" / "simsun.ttc"
-    if font_file.exists():
-        font = TTFont("ChineseRecord", str(font_file), subfontIndex=0)
-    else:
-        font = UnicodeCIDFont("STSong-Light")
-    pdfmetrics.registerFont(font)
-    chinese = style("Chinese publication", font.fontName, 10.1, 14)
-    citation = style("Chinese citation", font.fontName, 9, 12, MUTED, wordWrap="CJK")
-    rows = []
-    for item in p.CHINESE_PUBLICATIONS:
-        title = link(item["title"], item["url"]) if item.get("url") else escape(item["title"])
-        if item.get("translated_title"):
-            translation = escape(en(item["translated_title"]))
-            title += f' <font name="Times-Italic" color="{MUTED}">({translation})</font>'
-        credit = escape("、".join(item["authors"]) + f'　《{item["journal"]}》')
-        issue = escape(en(p.issue_citation(item)))
-        rows.append(KeepTogether([Paragraph(title, chinese),
-                                  Paragraph(f'{credit}　<font name="Helvetica">{issue}</font>', citation),
-                                  Spacer(1, 5)]))
-    return rows
 
 
 def cv_table(rows):
@@ -142,13 +119,11 @@ def build():
         Spacer(1, 6),
         HRFlowable(width="100%", thickness=0.8, color=colors.HexColor(CLAY)),
         para("Education", "section"), cv_table(p.EDUCATION),
-        para("Publications", "section"),
+        paper_section("Publications", p.PUBLICATIONS),
         para("* Corresponding author", "note"), Spacer(1, 4),
     ]
     story.extend(paper_flowables(item) for item in p.PUBLICATIONS)
-    story.append(para("Chinese-language publications", "section"))
-    story.extend(chinese_papers())
-    story.extend([PageBreak(), para("Working papers", "section")])
+    story.extend([PageBreak(), paper_section("Working papers", p.WORKING_PAPERS)])
     story.extend(paper_flowables(item) for item in p.WORKING_PAPERS)
     story.extend([PageBreak(), para("Research, teaching &amp; service", "section"), cv_table(p.APPOINTMENTS),
                   para("Research projects", "section")])

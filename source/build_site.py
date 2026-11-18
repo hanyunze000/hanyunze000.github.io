@@ -64,7 +64,6 @@ def paper_entry(paper, lang):
         return local((en, ja), lang)
 
     published = "doi" in paper
-    heading = "h5" if published else "h4"
     title = escape(paper["title"])
     journal = details = action = ""
     if published:
@@ -87,7 +86,7 @@ def paper_entry(paper, lang):
             label = tr(f"Presentations of this paper ({count})", f"この論文の研究発表（{count}件）")
         details += f'<details class="disclosure"><summary>{label}</summary>{meetings(paper, lang)}</details>'
     return (f'<article class="paper" id="{paper["id"]}"><div class="paper-line">'
-            f'<div class="paper-info">{journal}<{heading} class="paper-title" lang="en">{title}</{heading}>'
+            f'<div class="paper-info">{journal}<h4 class="paper-title" lang="en">{title}</h4>'
             f'<p class="authors" lang="en">{authors(paper, lang)}</p></div>'
             f'{action}</div>'
             f'<div class="paper-details">{details}</div></article>')
@@ -130,27 +129,6 @@ def photography(lang):
           </div><form method="dialog"><button autofocus>{tr("Close", "閉じる")} <span aria-hidden="true">×</span></button></form></div>
           <img class="viewer-image" alt="">
         </dialog>"""
-
-
-def chinese_publications(lang):
-    label = local(("Chinese-language publications", "中国語の掲載論文"), lang)
-    records = []
-    for item in p.CHINESE_PUBLICATIONS:
-        title = escape(item["title"])
-        if item.get("translated_title"):
-            translation = escape(local(item["translated_title"], lang))
-            parenthetical = f" ({translation})" if lang == "en" else f"（{translation}）"
-            title += f'<span class="title-translation" lang="{lang}">{parenthetical}</span>'
-        if item.get("url"):
-            title = f'<a href="{escape(item["url"], quote=True)}">{title}</a>'
-        names = "、".join(f'<strong>{escape(name)}</strong>' if name == "韩运泽" else escape(name)
-                         for name in item["authors"])
-        records.append(f'<li><h5 class="chinese-title">{title}</h5><p class="chinese-citation">'
-                       f'{names} · 《{escape(item["journal"])}》 · '
-                       f'<span lang="{lang}">{escape(local(p.issue_citation(item), lang))}</span></p></li>')
-    return (f'<details id="chinese-publications" class="chinese-pubs collection">'
-            f'<summary class="publication-group-heading"><h4>{label} <span class="count">({len(records)})</span></h4></summary>'
-            f'<ul class="chinese-list" lang="zh-Hans">{"".join(records)}</ul></details>')
 
 
 def render(lang, edition_query=""):
@@ -242,15 +220,11 @@ def render(lang, edition_query=""):
       {education}
       <section class="page-section" id="research" aria-labelledby="research-heading">
         <h2 id="research-heading">{labels["research"]}</h2>
-        <div id="publications" class="publications">
-          <div class="subsection-head"><h3>{tr("Publications", "学術論文")}</h3>
+        <section id="publications" class="publications" aria-labelledby="publications-heading">
+          <div class="subsection-head"><h3 id="publications-heading">{tr("Publications", "学術論文")} <span class="count">({len(p.PUBLICATIONS)})</span></h3>
             <p class="paper-key"><span aria-hidden="true">*</span> {tr("Corresponding author", "責任著者")}</p></div>
-          <section id="international-publications" aria-labelledby="international-publications-heading">
-            <h4 class="publication-group-heading" id="international-publications-heading">{tr("International peer-reviewed publications", "査読付き国際誌の掲載論文")}</h4>
-            {pubs}
-          </section>
-          {chinese_publications(lang)}
-        </div>
+          {pubs}
+        </section>
         <section id="working-papers" class="working-papers" aria-labelledby="working-papers-heading">
           <h3 id="working-papers-heading">{tr("Working papers", "ワーキングペーパー")} <span class="count">({len(p.WORKING_PAPERS)})</span></h3>
           {working}
