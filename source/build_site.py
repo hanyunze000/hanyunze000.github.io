@@ -153,7 +153,7 @@ def chinese_publications(lang):
             f'<ul class="chinese-list" lang="zh-Hans">{"".join(records)}</ul></details>')
 
 
-def render(lang):
+def render(lang, edition_query=""):
     def tr(en, ja):
         return local((en, ja), lang)
 
@@ -222,7 +222,7 @@ def render(lang):
   <header class="masthead"><div class="wrap masthead-inner">
     <a class="brand" href="#top" aria-label="{tr("Yunze Han, homepage", "韓運澤のホームページ")}"><span class="seal" aria-hidden="true" lang="ja">韓</span><span lang="en">Yunze Han</span></a>
     <nav class="section-nav" aria-label="{tr("Main navigation", "メインナビゲーション")}">{nav}</nav>
-    <a class="language-switch" href="{EDITIONS[alt_lang]}" hreflang="{alt_lang}" lang="{alt_lang}" aria-label="{tr("日本語で読む", "Read in English")}">{tr("日本語", "English")}</a>
+    <a class="language-switch" href="{EDITIONS[alt_lang]}{edition_query}" hreflang="{alt_lang}" lang="{alt_lang}" aria-label="{tr("日本語で読む", "Read in English")}">{tr("日本語", "English")}</a>
   </div></header>
   <main id="main">
     <section class="profile" aria-labelledby="profile-name"><div class="wrap profile-inner">
@@ -296,8 +296,11 @@ location.replace("{home}" + section);
 
 
 if __name__ == "__main__":
+    # Hash both editions before inserting their cross-links to avoid a circular dependency.
+    editions = "".join(render(language) for language in EDITIONS)
+    edition_query = "?v=" + sha256(editions.encode("utf-8")).hexdigest()[:8]
     for language, filename in EDITIONS.items():
-        (ROOT / filename).write_text(render(language), encoding="utf-8")
+        (ROOT / filename).write_text(render(language, edition_query), encoding="utf-8")
         suffix = "-ja" if language == "ja" else ""
         for legacy, section in (("research", "research"), ("projects", "projects"), ("cv", "education")):
             (ROOT / f"{legacy}{suffix}.html").write_text(redirect(language, section), encoding="utf-8")
