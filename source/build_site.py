@@ -142,7 +142,7 @@ def render(lang, edition_query=""):
     alt_lang = tr("ja", "en")
     name, native = (p.NAME, p.NAME_JA) if lang == "en" else (p.NAME_JA, p.NAME)
     description = tr("Yunze Han at Kyoto University. Publications, working papers, education, and field projects.",
-                     "京都大学の韓運澤の個人ページ。学歴、論文、ワーキングペーパー、調査プロジェクトを掲載しています。")
+                     "京都大学の韓運澤の個人ページ。学歴、論文、ワーキングペーパー、研究プロジェクトを掲載しています。")
     info = {"@context": "https://schema.org", "@type": "Person", "name": p.NAME,
             "alternateName": ["韩运泽", p.NAME_JA],
             "affiliation": {"@type": "CollegeOrUniversity", "name": "Kyoto University"},
@@ -150,7 +150,7 @@ def render(lang, edition_query=""):
     arrow = '<span class="arrow" aria-hidden="true">↗</span>'
     labels = {
         "education": tr("Education", "学歴"), "research": tr("Research", "研究"),
-        "projects": tr("Projects", "プロジェクト"), "experience": tr("Experience", "経歴"),
+        "projects": tr("Projects", "研究プロジェクト"), "experience": tr("Experience", "経歴"),
         "photography": tr("Photography", "写真作品"),
     }
     nav = "".join(f'<a href="#{sid}">{label}</a>' for sid, label in labels.items())
@@ -231,7 +231,7 @@ def render(lang, edition_query=""):
         </section>
       </section>
       <section class="page-section" id="projects" aria-labelledby="projects-heading">
-        <h2 id="projects-heading">{tr("Research projects", "調査プロジェクト")}</h2>
+        <h2 id="projects-heading">{tr("Research projects", "研究プロジェクト")}</h2>
         <p class="section-intro">{tr("I work on project evaluations at the JICA Ogata Sadako Research Institute for Peace and Development.", "JICA緒方貞子平和開発研究所で、開発プロジェクトの効果検証に携わっています。")}</p>
         {"".join(projects)}
       </section>
