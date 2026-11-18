@@ -46,6 +46,7 @@ PUBLICATIONS = [
     },
 ]
 
+# Page pairs give the first and last page, with None for an unknown end page.
 CHINESE_PUBLICATIONS = [
     {
         "title": "全球大型农业和食品业合作社的发展历程、现状与多维贡献",
@@ -54,7 +55,7 @@ CHINESE_PUBLICATIONS = [
             "世界の大規模な農業・食品協同組合の発展過程と現状、多面的な貢献",
         ),
         "authors": ["曹斌", "原嘉毅", "韩运泽"],
-        "journal": "中国农民合作社", "year": "2026", "issue": "10", "pages": "第58页起",
+        "journal": "中国农民合作社", "year": "2026", "issue": "10", "pages": (58, None),
     },
     {
         "title": "中国税务的财政监管问题探讨——以城镇土地使用税为例",
@@ -63,7 +64,7 @@ CHINESE_PUBLICATIONS = [
             "中国の税務行政における財政監督の課題―城鎮土地使用税を例に",
         ),
         "authors": ["韩运泽"],
-        "journal": "财富时代", "year": "2020", "issue": "10", "pages": "179–180页",
+        "journal": "财富时代", "year": "2020", "issue": "10", "pages": (179, 180),
         "url": "https://oversea.cnki.net/kcms2/article/abstract?v=q-VwKjT1PfwYfy78BlCJK9S9eIwp0d5WQt1s1jkgn5VuhWe_09kuWLpAtpkwl-CjUmBu98SdkzMxyEl2vvJVI1RDCBNtVtBPzggMujzzHMHLxeTaK5MAdgIhgctx4RNDfwGfO0x5U66g_6ersXCc-972wbi3gyJl2lcp3O5yt3kNKpD5MQ7D0w==&uniplatform=OVERSEA&language=CHS",
     },
     {
@@ -73,7 +74,7 @@ CHINESE_PUBLICATIONS = [
             "2020年に米国株式市場でサーキットブレーカーが発動した要因と中国への示唆",
         ),
         "authors": ["韩运泽"],
-        "journal": "决策探索(下)", "year": "2020", "issue": "10", "pages": "22–23页",
+        "journal": "决策探索(下)", "year": "2020", "issue": "10", "pages": (22, 23),
         "url": "https://doi.org/10.16324/j.cnki.jcts.2020.10.012",
     },
     {
@@ -83,10 +84,27 @@ CHINESE_PUBLICATIONS = [
             "オンライン授業の時代は本当に到来したのか―中高生のオンライン学習の効果に関する研究",
         ),
         "authors": ["韩运泽", "蒋瀛珅"],
-        "journal": "求学", "year": "2020", "issue": "36", "pages": "59–60页",
+        "journal": "求学", "year": "2020", "issue": "36", "pages": (59, 60),
         "url": "https://oversea.cnki.net/kcms2/article/abstract?v=q-VwKjT1Pfxf0fVJe7nqEWQnAZCm4BfVQiWUZ061cK0NhcA0jAsraWVl-fCt-MKPA2f9BaCUe4O_-jrpTbL563kXuZ1dTJW0q0PlOd_-SuWzGk79Scy2oJ7lhl_1079xphdxyLiiWPTh1miKq9GdhqbuqyBC63s_xraKxcauXePqLB3d5s3pug==&uniplatform=OVERSEA&language=CHS",
     },
 ]
+
+
+def issue_citation(record):
+    """Format a journal year, issue and page range in English and Japanese."""
+    first, last = record["pages"]
+    if last is None:
+        en_pages, ja_pages = f"starting on p. {first}", f"{first}頁から"
+    elif first == last:
+        en_pages, ja_pages = f"p. {first}", f"{first}頁"
+    else:
+        page_range = f"{first}–{last}"
+        en_pages, ja_pages = f"pp. {page_range}", f"{page_range}頁"
+    return (
+        f'{record["year"]}, no. {record["issue"]}, {en_pages}',
+        f'{record["year"]}年、第{record["issue"]}号、{ja_pages}',
+    )
+
 
 WORKING_PAPERS = [
     {

@@ -146,8 +146,8 @@ def chinese_publications(lang):
         names = "、".join(f'<strong>{escape(name)}</strong>' if name == "韩运泽" else escape(name)
                          for name in item["authors"])
         records.append(f'<li><h5 class="chinese-title">{title}</h5><p class="chinese-citation">'
-                       f'{names} · 《{escape(item["journal"])}》 · {item["year"]}年第{item["issue"]}期，'
-                       f'{escape(item["pages"])}</p></li>')
+                       f'{names} · 《{escape(item["journal"])}》 · '
+                       f'<span lang="{lang}">{escape(local(p.issue_citation(item), lang))}</span></p></li>')
     return (f'<details id="chinese-publications" class="chinese-pubs collection">'
             f'<summary class="publication-group-heading"><h4>{label} <span class="count">({len(records)})</span></h4></summary>'
             f'<ul class="chinese-list" lang="zh-Hans">{"".join(records)}</ul></details>')

@@ -94,8 +94,11 @@ def chinese_papers():
         if item.get("translated_title"):
             translation = escape(en(item["translated_title"]))
             title += f' <font name="Times-Italic" color="{MUTED}">({translation})</font>'
-        credit = ("、".join(item["authors"]) + f'　《{item["journal"]}》　{item["year"]}年第{item["issue"]}期，{item["pages"]}')
-        rows.append(KeepTogether([Paragraph(title, chinese), Paragraph(escape(credit), citation), Spacer(1, 5)]))
+        credit = escape("、".join(item["authors"]) + f'　《{item["journal"]}》')
+        issue = escape(en(p.issue_citation(item)))
+        rows.append(KeepTogether([Paragraph(title, chinese),
+                                  Paragraph(f'{credit}　<font name="Helvetica">{issue}</font>', citation),
+                                  Spacer(1, 5)]))
     return rows
 
 
