@@ -115,7 +115,14 @@ summary { color: var(--green); width: fit-content; cursor: pointer; }
 .cv-group h2 { font-size: clamp(26px, 2.4vw, 33px); }
 .cv-rows li, .memberships li { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 24px; line-height: 1.55; }
 .cv-rows li + li { margin-top: 22px; }
-.memberships li + li { margin-top: 10px; }
+.memberships li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7em;
+  column-gap: clamp(30px, 5vw, 78px);
+  padding-block: 13px;
+}
+.memberships li:first-child { padding-top: 0; }
+.memberships li + li { border-top: 1px solid #e0e5dd; }
 .cv-rows strong { display: block; color: var(--ink); font-weight: 600; }
 .cv-rows li div > span { display: block; color: var(--muted); }
 .cv-date { flex: 0 0 auto; font-size: 16px; text-align: right; }
@@ -173,6 +180,8 @@ html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
   .project .small-label { margin-bottom: 12px; padding: 0; }
   .project div > p { font-size: 18px; }
   .cv-group h2 { margin-bottom: 22px; }
+  .memberships li { grid-template-columns: 1fr; row-gap: 3px; padding-block: 12px; }
+  .memberships .cv-date { text-align: left; }
   .cv-list, .project-list { padding-bottom: 36px; }
   .footer-inner { align-items: flex-start; padding-block: 24px 30px; flex-wrap: wrap; }
 }
@@ -182,8 +191,6 @@ html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
   .profile-inner { grid-template-columns: minmax(0,1fr) 84px; gap: 10px 12px; }
   .portrait-frame { width: 84px; }
   .meetings li, html[lang="ja"] .meetings li { grid-template-columns: 1fr; gap: 0; }
-  .memberships li { display: block; }
-  .memberships .cv-date { display: block; text-align: left; }
 }
 @media print {
   :root { --paper: white; --white: white; --ink: black; --body: black; }

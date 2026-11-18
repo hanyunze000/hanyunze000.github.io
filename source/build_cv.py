@@ -131,9 +131,17 @@ def build():
         ]))
     story.extend([para("Fellowships &amp; awards", "section"), cv_table(p.AWARDS),
                   para("Academic memberships", "section")])
-    for year in sorted({row[0] for row in p.MEMBERSHIPS}, reverse=True):
-        societies = [escape(en(name)) for start, name in p.MEMBERSHIPS if start == year]
-        story.append(para(f'<b>Since {year}</b> · ' + " · ".join(societies)))
+    member_rows = [[para(escape(en(name))), para(f"Since {year}", "date")]
+                   for year, name in p.MEMBERSHIPS]
+    membership_table = Table(member_rows, colWidths=[383, 109], hAlign="LEFT")
+    membership_table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 1),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    story.append(membership_table)
     story.extend([para("Other professional experience", "section"), cv_table(p.OTHER_EXPERIENCE)])
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
 
