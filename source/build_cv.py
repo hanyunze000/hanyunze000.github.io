@@ -64,9 +64,8 @@ def paper_flowables(item):
         names.append(name)
     lines = [para(title, "paper"), para(", ".join(names))]
     if "journal" in item:
-        cite = f', {item["citation"]}' if "citation" in item else ""
         doi = link(item["doi"], "https://doi.org/" + item["doi"])
-        lines.append(para(f'<i>{escape(item["journal"])}</i>{cite} ({item["year"]}) · {doi}', "journal"))
+        lines.append(para(f'<i>{escape(item["journal"])}</i> ({item["year"]}) · {doi}', "journal"))
     if "meetings" in item:
         label = "Conference for this paper" if item.get("program_only") else "Presentations of this paper"
         lines.append(para(label, "meeting"))
@@ -87,11 +86,14 @@ def chinese_papers():
     else:
         font = UnicodeCIDFont("STSong-Light")
     pdfmetrics.registerFont(font)
-    chinese = style("Chinese publication", font.fontName, 10.1, 14, wordWrap="CJK")
+    chinese = style("Chinese publication", font.fontName, 10.1, 14)
     citation = style("Chinese citation", font.fontName, 9, 12, MUTED, wordWrap="CJK")
     rows = []
     for item in p.CHINESE_PUBLICATIONS:
         title = link(item["title"], item["url"]) if item.get("url") else escape(item["title"])
+        if item.get("translated_title"):
+            translation = escape(en(item["translated_title"]))
+            title += f' <font name="Times-Italic" color="{MUTED}">({translation})</font>'
         credit = ("、".join(item["authors"]) + f'　《{item["journal"]}》　{item["year"]}年第{item["issue"]}期，{item["pages"]}')
         rows.append(KeepTogether([Paragraph(title, chinese), Paragraph(escape(credit), citation), Spacer(1, 5)]))
     return rows
