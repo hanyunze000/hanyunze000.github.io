@@ -108,7 +108,7 @@ summary { width: fit-content; cursor: pointer; color: var(--green); }
 .early-title { margin-top: 2px; font-size: 15px; }
 .early-title p { margin-top: 5px; font-style: italic; }
 .chinese-pubs { margin-top: 6px; padding-top: 22px; border-top: 1px solid var(--rule); }
-.chinese-pubs > summary { padding-block: 5px; }
+.chinese-pubs > summary { padding-block: 5px; font-size: calc(var(--journal-size) + 2px); }
 .chinese-pubs > summary::marker { color: var(--green); font-size: .72em; }
 .chinese-pubs > summary:hover { color: var(--clay); text-decoration: underline; text-underline-offset: .2em; }
 .chinese-pubs > summary .count { color: inherit; font: inherit; font-style: normal; }
