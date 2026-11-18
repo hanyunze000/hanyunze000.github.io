@@ -78,13 +78,10 @@ def paper_entry(paper, lang):
     count = len(paper.get("meetings", []))
     if published:
         detail_text = f'<p class="paper-summary">{escape(local(paper["summary"], lang))}</p>'
-        if "earlier_version" in paper:
-            detail_text += (f'<a class="version-link" href="{paper["earlier_version"]}">'
-                            f'{tr("Discussion paper at Kyoto University", "京都大学のディスカッションペーパー版")} ↗</a>')
         details += f'<details class="disclosure"><summary>{tr("Research summary", "研究概要")}</summary>{detail_text}</details>'
     if count:
         if paper.get("program_only"):
-            label = tr("Conference program listing for this paper", "この論文の大会プログラム掲載情報")
+            label = tr("Conference for this paper", "この論文に関連する学会")
         else:
             label = tr(f"Presentations of this paper ({count})", f"この論文の研究発表（{count}件）")
         details += f'<details class="disclosure"><summary>{label}</summary>{meetings(paper, lang)}</details>'
@@ -166,7 +163,7 @@ def render(lang):
     info = {"@context": "https://schema.org", "@type": "Person", "name": p.NAME,
             "alternateName": ["韩运泽", p.NAME_JA],
             "affiliation": {"@type": "CollegeOrUniversity", "name": "Kyoto University"},
-            "sameAs": [p.ORCID, p.RESEARCHMAP]}
+            "sameAs": [p.RESEARCHMAP]}
     arrow = '<span class="arrow" aria-hidden="true">↗</span>'
     labels = {
         "education": tr("Education", "学歴"), "research": tr("Research", "研究"),
@@ -232,7 +229,6 @@ def render(lang):
         </div>
         <ul class="profile-links" aria-label="{tr("Research profiles", "研究者プロフィール")}">
           <li><a href="{p.RESEARCHMAP}" lang="en">researchmap {arrow}</a></li>
-          <li><a href="{p.ORCID}" lang="en">ORCID {arrow}</a></li>
         </ul>
       </div>
       <div class="portrait-frame"><img src="assets/portrait.jpg" alt="{tr("Yunze Han in the mountains", "山を背景にした韓運澤の写真")}" width="720" height="864"></div>
@@ -244,13 +240,13 @@ def render(lang):
         <div id="publications" class="publications">
           <div class="subsection-head"><h3>{tr("Publications", "学術論文")}</h3>
             <p class="paper-key"><span aria-hidden="true">*</span> {tr("Corresponding author", "責任著者")}</p></div>
-          {chinese_publications(lang)}
           {pubs}
+          {chinese_publications(lang)}
         </div>
-        <details id="working-papers" class="working-papers collection" open>
-          <summary><h3>{tr("Working papers", "ワーキングペーパー")} <span class="count">({len(p.WORKING_PAPERS)})</span></h3></summary>
+        <section id="working-papers" class="working-papers" aria-labelledby="working-papers-heading">
+          <h3 id="working-papers-heading">{tr("Working papers", "ワーキングペーパー")} <span class="count">({len(p.WORKING_PAPERS)})</span></h3>
           {working}
-        </details>
+        </section>
       </section>
       <section class="page-section" id="projects" aria-labelledby="projects-heading">
         <h2 id="projects-heading">{tr("Research projects", "調査プロジェクト")}</h2>

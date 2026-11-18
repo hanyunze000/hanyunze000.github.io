@@ -2,8 +2,15 @@ const languageLink = document.querySelector(".language-switch");
 const alternateEdition = languageLink.getAttribute("href");
 const header = document.querySelector(".masthead");
 const navLinks = [...document.querySelectorAll(".section-nav a")];
+const readingAnchors = [...document.querySelectorAll(
+  "main section[id], main article[id], #contact, #publications, #chinese-publications"
+)].reverse();
 const collections = [...document.querySelectorAll("details.collection")];
 const defaultPanels = collections.filter(item => item.open).map(item => item.id).join(",");
+
+new ResizeObserver(() => {
+  document.documentElement.style.setProperty("--masthead-height", header.getBoundingClientRect().height + "px");
+}).observe(header);
 
 function revealBookmark(preservePanel = false) {
   const target = document.getElementById(location.hash.slice(1));
@@ -33,15 +40,20 @@ function updateNavigation() {
   }
 }
 
+function readingAnchor() {
+  if (window.scrollY <= 12) return null;
+  const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop);
+  const boundary = Math.max(header.getBoundingClientRect().bottom, padding) + 2;
+  return readingAnchors.find(anchor => anchor.getBoundingClientRect().top <= boundary);
+}
+
 function updateLanguageLink() {
   const url = new URL(alternateEdition, location.href);
+  const anchor = readingAnchor();
+  if (anchor) url.hash = anchor.id;
   const expanded = collections.filter(item => item.open).map(item => item.id).join(",");
-  if (expanded !== defaultPanels) url.searchParams.set("open", expanded);
-  if (location.hash && document.getElementById(location.hash.slice(1))) {
-    url.hash = location.hash;
-  } else if (window.scrollY > 12) {
-    const current = navLinks.find(link => link.hasAttribute("aria-current"));
-    if (current) url.hash = current.hash;
+  if (expanded !== defaultPanels || collections.includes(anchor)) {
+    url.searchParams.set("open", expanded);
   }
   languageLink.href = url.href;
 }

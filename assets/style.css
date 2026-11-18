@@ -23,14 +23,16 @@
   --serif: Baskervville, Georgia, "Yu Mincho", "Hiragino Mincho ProN", serif;
   --sans: "Source Sans 3", "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   --secondary-paper-size: clamp(17px, 1.4vw, 20px);
+  --journal-size: 20px;
+  --masthead-height: 77px;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-html { scroll-padding-top: 95px; }
+html { scroll-padding-top: calc(var(--masthead-height) + 18px); }
 @media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
+  html:has(a[href^="#"]:focus) { scroll-behavior: smooth; }
 }
-body { margin: 0; background: var(--paper); color: var(--body); font: 400 18px/1.6 var(--sans); -webkit-text-size-adjust: 100%; }
+body { margin: 0; padding-top: var(--masthead-height); background: var(--paper); color: var(--body); font: 400 18px/1.6 var(--sans); -webkit-text-size-adjust: 100%; }
 .wrap { width: min(1120px, 86%); margin-inline: auto; }
 h1, h2, h3, h4, p, ul { margin: 0; }
 h1, h2, h3, h4 { color: var(--ink); font: 400 1em/1.2 var(--serif); }
@@ -44,7 +46,7 @@ ul { list-style: none; padding: 0; }
 .skip-link { position: fixed; z-index: 6; top: 8px; left: 12px; padding: 8px 15px; background: white; transform: translateY(-150%); }
 .skip-link:focus { transform: none; }
 
-.masthead { position: sticky; top: 0; z-index: 3; border-bottom: 1px solid var(--rule); background: var(--paper); }
+.masthead { position: fixed; inset: 0 0 auto; z-index: 3; border-bottom: 1px solid var(--rule); background: var(--paper); }
 .masthead-inner { display: grid; grid-template-columns: minmax(max-content,1fr) auto auto; align-items: center; gap: clamp(20px,4vw,62px); min-height: 76px; }
 .brand { width: fit-content; display: inline-flex; align-items: center; gap: 12px; color: var(--ink); font: 600 22px/1.2 var(--serif); text-decoration: none; white-space: nowrap; }
 .seal { display: grid; place-items: center; width: 31px; height: 31px; border: 1px solid #a27161; color: var(--clay); font: 400 23px/1 "Yu Mincho","Hiragino Mincho ProN",serif; }
@@ -79,8 +81,8 @@ ul { list-style: none; padding: 0; }
 .paper { padding-block: 28px 31px; }
 .paper + .paper { border-top: 1px solid var(--rule); }
 .paper-line { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: clamp(26px,6vw,88px); align-items: start; }
-.journal { --journal-size: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; margin-bottom: 10px; color: var(--muted); font-size: 16px; }
-.journal i { color: #455e53; font: italic 400 var(--journal-size)/1.4 Georgia,"Times New Roman",serif; }
+.journal { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; margin-bottom: 10px; color: var(--muted); font-size: 16px; }
+.journal i, .chinese-pubs > summary { color: #455e53; font: italic 400 var(--journal-size)/1.4 Georgia,"Times New Roman","Yu Mincho","Hiragino Mincho ProN",serif; }
 .pub-year, .small-label { color: var(--clay); font: 600 14px/1.4 var(--sans); }
 .pub-year { padding-right: 12px; border-right: 1px solid var(--rule); font-size: var(--journal-size); font-weight: 500; font-variant-numeric: tabular-nums; }
 .paper-title { max-width: 44ch; font-size: clamp(25px,2.12vw,31px); letter-spacing: -.025em; line-height: 1.3; }
@@ -99,26 +101,24 @@ ul { list-style: none; padding: 0; }
 .disclosure + .disclosure { margin-top: 5px; }
 summary { width: fit-content; cursor: pointer; color: var(--green); }
 .paper-summary { max-width: 64ch; padding: 10px 0 0 16px; }
-.version-link { display: inline-block; margin: 6px 0 0 16px; }
 .meetings { margin: 10px 0 0 6px; padding-left: 15px; border-left: 2px solid var(--rule); }
 .meetings li { display: grid; grid-template-columns: 5em minmax(0,1fr); gap: 8px; margin-top: 9px; }
 .meeting-date, .meeting-note, .cv-date { color: var(--muted); }
 .meeting-date, .cv-date { font-variant-numeric: tabular-nums; }
 .early-title { margin-top: 2px; font-size: 15px; }
 .early-title p { margin-top: 5px; font-style: italic; }
-.chinese-pubs { margin-top: 12px; padding-bottom: 17px; border-bottom: 1px solid var(--rule); }
-.chinese-pubs > summary { padding: 5px 12px; border: 1px solid #a9b7aa; border-radius: 3px; font-size: 17px; font-weight: 600; }
+.chinese-pubs { margin-top: 6px; padding-top: 22px; border-top: 1px solid var(--rule); }
+.chinese-pubs > summary { padding-block: 5px; }
+.chinese-pubs > summary::marker { color: var(--green); font-size: .72em; }
+.chinese-pubs > summary:hover { color: var(--clay); text-decoration: underline; text-underline-offset: .2em; }
+.chinese-pubs > summary .count { color: inherit; font: inherit; font-style: normal; }
 .chinese-list { max-width: 810px; padding: 3px 0 0 clamp(0px,1.5vw,20px); }
 .chinese-list li { padding-block: 15px; }
 .chinese-list li + li { border-top: 1px solid var(--rule); }
 .chinese-title { font: 500 var(--secondary-paper-size)/1.6 "Songti SC","SimSun",serif; color: var(--ink); }
 .chinese-title a { text-decoration-color: #a9b9aa; }
 .chinese-citation { margin-top: 4px; color: var(--muted); font: 400 15px/1.7 "Microsoft YaHei","PingFang SC",sans-serif; }
-.working-papers { margin-top: 37px; border-top: 1px solid var(--rule); }
-.working-papers > summary { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 16px; padding: 21px 0 5px; list-style: none; }
-.working-papers > summary::-webkit-details-marker { display: none; }
-.working-papers > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin-right: 5px; border: solid var(--green); border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
-.working-papers[open] > summary::after { transform: rotate(225deg); }
+.working-papers { margin-top: 37px; padding-top: 21px; border-top: 1px solid var(--rule); }
 .working-papers .paper { padding-block: 16px; }
 .working-papers .paper-line { display: block; }
 .working-papers .paper-title { max-width: 82ch; font-size: var(--secondary-paper-size); line-height: 1.45; letter-spacing: -.01em; }
@@ -173,7 +173,7 @@ html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
   .cv-rows .cv-date { display: block; margin-top: 3px; text-align: left; }
 }
 @media (max-width: 800px) {
-  html { scroll-padding-top: 105px; }
+  :root { --masthead-height: 85px; }
   .masthead-inner { min-height: 0; grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 9px 5px; }
   .brand { font-size: 19px; gap: 8px; }
   .seal { width: 26px; height: 26px; font-size: 18px; }
@@ -182,6 +182,7 @@ html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
   .language-switch { grid-column: 2; grid-row: 1; min-width: 0; padding: 3px 9px; }
 }
 @media (max-width: 670px) {
+  :root { --journal-size: 18px; }
   .wrap { width: calc(100% - 40px); }
   .photo-gallery { --preferred-height: clamp(145px,32vw,205px); display: flex; flex-wrap: wrap; gap: 10px; }
   .photo-row { display: contents; }
@@ -201,7 +202,7 @@ html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
   .paper-line { grid-template-columns: 1fr; gap: 11px; }
   .paper-title { font-size: 25px; }
   .paper-action { justify-self: start; padding: 0; }
-  .journal { --journal-size: 18px; margin-bottom: 8px; }
+  .journal { margin-bottom: 8px; }
   .authors { margin-top: 7px; }
   .article-link { padding: 4px 10px; }
   .working-papers { margin-top: 26px; }
@@ -221,7 +222,7 @@ html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
 }
 @media print {
   :root { --paper: white; --white: white; --ink: black; --body: black; }
-  body { font-size: 11pt; }
+  body { padding-top: 0; font-size: 11pt; }
   .masthead, .skip-link, .portrait-frame, .profile-links, .paper-action, .footer { display: none; }
   .wrap { width: 100%; }
   .profile-inner, .paper-line, .project, .cv-group { display: block; padding-block: 12px; }

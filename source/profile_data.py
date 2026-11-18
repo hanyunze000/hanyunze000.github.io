@@ -3,7 +3,6 @@
 NAME = "Yunze Han"
 NAME_JA = "韓 運澤"
 MASKED_EMAIL = "hanyunze19981203*outlook.com"
-ORCID = "https://orcid.org/0009-0006-6268-6986"
 RESEARCHMAP = "https://researchmap.jp/yunzehan"
 
 PUBLICATIONS = [
@@ -29,7 +28,6 @@ PUBLICATIONS = [
         "year": "2026",
         "citation": "16, 119",
         "doi": "10.1186/s13561-026-00833-w",
-        "earlier_version": "https://doi.org/10.17983/295362",
         "summary": (
             "In rural China, public health insurance enrollment was associated with higher caloric intake. People who consumed more calories also earned more per working day in the following survey wave.",
             "中国農村では、公的医療保険の加入者ほど摂取カロリーが高く、また、摂取カロリーが高い人ほど次回調査時の労働日当たり所得が高いという関連が見られました。",
@@ -114,7 +112,6 @@ WORKING_PAPERS = [
             {
                 "name": "21st International Convention of the East Asian Economic Association",
                 "date": ("Nov 2026", "2026年11月"),
-                "note": ("Listed in the program", "大会プログラム掲載"),
                 "url": "https://eaea21.pfm.gov.kh/293-program-and-speaker",
             },
         ],

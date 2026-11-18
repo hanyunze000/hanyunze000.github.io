@@ -68,7 +68,7 @@ def paper_flowables(item):
         doi = link(item["doi"], "https://doi.org/" + item["doi"])
         lines.append(para(f'<i>{escape(item["journal"])}</i>{cite} ({item["year"]}) · {doi}', "journal"))
     if "meetings" in item:
-        label = "Conference program listing for this paper" if item.get("program_only") else "Presentations of this paper"
+        label = "Conference for this paper" if item.get("program_only") else "Presentations of this paper"
         lines.append(para(label, "meeting"))
         for event in item["meetings"]:
             event_name = escape(en(event["name"]))
@@ -133,8 +133,7 @@ def build():
     story = [
         para(p.NAME, "title"),
         Spacer(1, 5),
-        para(p.MASKED_EMAIL + " (replace * with @)  ·  " + link("researchmap", p.RESEARCHMAP)
-             + "  ·  " + link("ORCID 0009-0006-6268-6986", p.ORCID), "note"),
+        para(p.MASKED_EMAIL + " (replace * with @)  ·  " + link("researchmap", p.RESEARCHMAP), "note"),
         Spacer(1, 6),
         HRFlowable(width="100%", thickness=0.8, color=colors.HexColor(CLAY)),
         para("Education", "section"), cv_table(p.EDUCATION),
