@@ -172,14 +172,14 @@ FIELDWORK = [
 
 # Each CV row consists of a date, a qualification or role, and an institution.
 EDUCATION = [
-    (("2024 – Sep 2027 (expected)", "2024年入学、2027年9月修了予定"),
+    (("2024 – Sep 2027 (expected)", "2024年 – 2027年9月（予定）"),
      ("Doctoral program in Natural Resource Economics", "生物資源経済学専攻 博士後期課程"),
      ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
     (("Oct 2022 – Sep 2024", "2022年10月 – 2024年9月"),
-     ("Master’s degree in Natural Resource Economics", "生物資源経済学専攻 修士課程修了"),
+     ("Master’s degree in Natural Resource Economics", "生物資源経済学専攻 修士課程"),
      ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
     (("Sep 2017 – Jun 2021", "2017年9月 – 2021年6月"),
-     ("Bachelor’s degree in Financial Management", "財務管理専攻 学士課程修了"),
+     ("Bachelor’s degree in Financial Management", "財務管理専攻 学士課程"),
      ("Glorious Sun School of Business and Management, Donghua University", "東華大学 旭日工商管理学院")),
 ]
 APPOINTMENTS = [

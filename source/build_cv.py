@@ -71,9 +71,9 @@ def paper_flowables(item):
         label = "Conference program listing for this paper" if item.get("program_only") else "Presentations of this paper"
         lines.append(para(label, "meeting"))
         for event in item["meetings"]:
-            event_link = link(en(event["name"]), event["url"])
+            event_name = escape(en(event["name"]))
             note = f' · {en(event["note"])}' if "note" in event else ""
-            lines.append(para(f'{en(event["date"])} · {event_link}{note}', "meeting"))
+            lines.append(para(f'{en(event["date"])} · {event_name}{note}', "meeting"))
     if "summary" in item:
         lines.extend([Spacer(1, 6), para(escape(en(item["summary"])))])
     lines.append(Spacer(1, 14))

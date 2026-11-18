@@ -6,6 +6,7 @@ from html import escape
 from pathlib import Path
 
 import profile_data as p
+from photographs import ROWS as PHOTO_ROWS
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,7 +55,7 @@ def meetings(paper, lang):
             earlier = (f'<details class="early-title"><summary>{label}</summary>'
                        f'<p lang="en">{escape(meeting["earlier_title"])}</p></details>')
         rows.append(f'<li><span class="meeting-date">{date}</span>'
-                    f'<div><a href="{escape(meeting["url"])}">{name}</a>{note}{earlier}</div></li>')
+                    f'<div>{name}{note}{earlier}</div></li>')
     return f'<div class="meetings"><ul>{"".join(rows)}</ul></div>'
 
 
@@ -64,17 +65,15 @@ def paper_entry(paper, lang):
 
     published = "doi" in paper
     title = escape(paper["title"])
-    journal = details = ""
+    journal = details = action = ""
     if published:
         url = "https://doi.org/" + paper["doi"]
         title = f'<a href="{url}">{title}</a>'
         cite = f' · {escape(paper["citation"])}' if "citation" in paper else ""
         journal = (f'<p class="journal"><span class="pub-year">{paper["year"]}</span>'
                    f'<i lang="en">{escape(paper["journal"])}</i>{cite}</p>')
-        action = f'<a class="article-link" href="{url}">{tr("Read article", "論文を読む")} <span aria-hidden="true">↗</span></a>'
-    else:
-        action = (f'<a class="request-link" href="#contact">'
-                  f'{tr("Email for a draft", "草稿の問い合わせ先")}</a>')
+        action = (f'<div class="paper-action"><a class="article-link" href="{url}">{tr("Read article", "論文を読む")}'
+                  f' <span aria-hidden="true">↗</span></a></div>')
 
     count = len(paper.get("meetings", []))
     if published:
@@ -92,7 +91,7 @@ def paper_entry(paper, lang):
     return (f'<article class="paper" id="{paper["id"]}"><div class="paper-line">'
             f'<div class="paper-info">{journal}<h4 class="paper-title" lang="en">{title}</h4>'
             f'<p class="authors" lang="en">{authors(paper, lang)}</p></div>'
-            f'<div class="paper-action">{action}</div></div>'
+            f'{action}</div>'
             f'<div class="paper-details">{details}</div></article>')
 
 
@@ -106,6 +105,33 @@ def cv_rows(rows, lang):
 
 
 EDITIONS = {"en": "index.html", "ja": "ja.html"}
+
+
+def photography(lang):
+    def tr(en, ja):
+        return local((en, ja), lang)
+
+    rows = []
+    for row in PHOTO_ROWS:
+        links = []
+        for photo in row:
+            base = f"assets/photography/{photo.slug}"
+            ratio = photo.width / photo.height
+            links.append(
+                f'<a class="gallery-photo" href="{base}.jpg" style="--ratio:{ratio:.5f}">'
+                f'<img src="assets/photography/previews/{photo.slug}.webp" width="{photo.width}" height="{photo.height}" '
+                f'loading="lazy" decoding="async" alt="{escape(local(photo.description, lang), quote=True)}"></a>'
+            )
+        rows.append(f'<div class="photo-row">{"".join(links)}</div>')
+    return f"""<div class="photo-gallery">{"".join(rows)}</div>
+        <dialog class="photo-viewer" aria-label="{tr("Photograph viewer", "写真の拡大表示")}">
+          <div class="viewer-bar"><div class="viewer-navigation">
+            <button type="button" data-step="-1" aria-label="{tr("Previous photograph", "前の写真")}">←</button>
+            <span class="viewer-count" aria-live="polite" aria-atomic="true"></span>
+            <button type="button" data-step="1" aria-label="{tr("Next photograph", "次の写真")}">→</button>
+          </div><form method="dialog"><button autofocus>{tr("Close", "閉じる")} <span aria-hidden="true">×</span></button></form></div>
+          <img class="viewer-image" alt="">
+        </dialog>"""
 
 
 def chinese_publications(lang):
@@ -145,6 +171,7 @@ def render(lang):
     labels = {
         "education": tr("Education", "学歴"), "research": tr("Research", "研究"),
         "projects": tr("Projects", "プロジェクト"), "experience": tr("Experience", "経歴"),
+        "photography": tr("Photography", "写真作品"),
     }
     nav = "".join(f'<a href="#{sid}">{label}</a>' for sid, label in labels.items())
     pubs = "".join(paper_entry(item, lang) for item in p.PUBLICATIONS)
@@ -185,6 +212,7 @@ def render(lang):
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="stylesheet" href="{asset("style.css")}">
   <script src="{asset("language.js")}" defer></script>
+  <script src="{asset("gallery.js")}" defer></script>
   <script type="application/ld+json">{json.dumps(info, ensure_ascii=False)}</script>
 </head>
 <body id="top">
@@ -216,10 +244,10 @@ def render(lang):
         <div id="publications" class="publications">
           <div class="subsection-head"><h3>{tr("Publications", "学術論文")}</h3>
             <p class="paper-key"><span aria-hidden="true">*</span> {tr("Corresponding author", "責任著者")}</p></div>
-          {pubs}
           {chinese_publications(lang)}
+          {pubs}
         </div>
-        <details id="working-papers" class="working-papers collection">
+        <details id="working-papers" class="working-papers collection" open>
           <summary><h3>{tr("Working papers", "ワーキングペーパー")} <span class="count">({len(p.WORKING_PAPERS)})</span></h3></summary>
           {working}
         </details>
@@ -231,6 +259,10 @@ def render(lang):
       </section>
       <section class="page-section experience" id="experience" aria-labelledby="experience-heading">
         <h2 id="experience-heading">{labels["experience"]}</h2>{background}
+      </section>
+      <section class="page-section" id="photography" aria-labelledby="photography-heading">
+        <h2 id="photography-heading">{labels["photography"]}</h2>
+        {photography(lang)}
       </section>
     </div>
   </main>

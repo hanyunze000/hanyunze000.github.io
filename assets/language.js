@@ -3,10 +3,12 @@ const alternateEdition = languageLink.getAttribute("href");
 const header = document.querySelector(".masthead");
 const navLinks = [...document.querySelectorAll(".section-nav a")];
 const collections = [...document.querySelectorAll("details.collection")];
+const defaultPanels = collections.filter(item => item.open).map(item => item.id).join(",");
 
-function revealBookmark() {
+function revealBookmark(preservePanel = false) {
   const target = document.getElementById(location.hash.slice(1));
   if (!target) return;
+  if (preservePanel && target.matches("details.collection")) return;
   let disclosure = target.closest("details");
   let opened = false;
   while (disclosure) {
@@ -33,8 +35,8 @@ function updateNavigation() {
 
 function updateLanguageLink() {
   const url = new URL(alternateEdition, location.href);
-  const expanded = collections.filter(item => item.open).map(item => item.id);
-  if (expanded.length) url.searchParams.set("open", expanded.join(","));
+  const expanded = collections.filter(item => item.open).map(item => item.id).join(",");
+  if (expanded !== defaultPanels) url.searchParams.set("open", expanded);
   if (location.hash && document.getElementById(location.hash.slice(1))) {
     url.hash = location.hash;
   } else if (window.scrollY > 12) {
@@ -44,9 +46,9 @@ function updateLanguageLink() {
   languageLink.href = url.href;
 }
 
-const requested = (new URLSearchParams(location.search).get("open") || "").split(",");
+const requested = new URLSearchParams(location.search).get("open");
 for (const disclosure of collections) {
-  if (requested.includes(disclosure.id)) disclosure.open = true;
+  if (requested !== null) disclosure.open = requested.split(",").includes(disclosure.id);
   disclosure.addEventListener("toggle", updateLanguageLink);
 }
 
@@ -65,5 +67,5 @@ window.addEventListener("resize", scheduleUpdate);
 window.addEventListener("hashchange", () => { revealBookmark(); scheduleUpdate(); });
 window.addEventListener("pageshow", scheduleUpdate);
 languageLink.addEventListener("click", updateLanguageLink);
-revealBookmark();
+revealBookmark(requested !== null);
 scheduleUpdate();
