@@ -69,9 +69,8 @@ def paper_entry(paper, lang):
     if published:
         url = "https://doi.org/" + paper["doi"]
         title = f'<a href="{url}">{title}</a>'
-        cite = f' · {escape(paper["citation"])}' if "citation" in paper else ""
         journal = (f'<p class="journal"><span class="pub-year">{paper["year"]}</span>'
-                   f'<i lang="en">{escape(paper["journal"])}</i>{cite}</p>')
+                   f'<i lang="en">{escape(paper["journal"])}</i></p>')
         action = (f'<div class="paper-action"><a class="article-link" href="{url}" target="_blank" rel="noopener" '
                   f'title="{tr("Open in a new tab", "新しいタブで開く")}">{tr("Read article", "論文を読む")}'
                   f' <span aria-hidden="true">↗</span></a></div>')
