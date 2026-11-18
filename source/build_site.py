@@ -1,6 +1,7 @@
 """Rebuild both static language editions with Python's standard library."""
 
 import json
+from hashlib import sha256
 from html import escape
 from pathlib import Path
 from urllib.parse import quote
@@ -9,6 +10,11 @@ import profile_data as p
 
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def asset(name):
+    version = sha256((ROOT / "assets" / name).read_bytes()).hexdigest()[:8]
+    return f"assets/{name}?v={version}"
 
 
 def local(value, lang):
@@ -213,8 +219,8 @@ def render(lang, page):
   <link rel="alternate" hreflang="ja" href="{PAGES[page][1]}">
   <link rel="alternate" hreflang="x-default" href="{PAGES[page][0]}">
   <link rel="icon" href="assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="assets/style.css">
-  <script src="assets/language.js" defer></script>
+  <link rel="stylesheet" href="{asset("style.css")}">
+  <script src="{asset("language.js")}" defer></script>
   <script type="application/ld+json">{json.dumps(info, ensure_ascii=False)}</script>
 </head>
 <body id="top" class="page-{page}">

@@ -1,13 +1,10 @@
-// Both editions are complete HTML pages. Carry the current reading position across.
+// Both editions use the same section and paper anchors.
 const languageLink = document.querySelector(".language-switch");
-const positions = document.querySelectorAll("[data-position][id]");
 
-languageLink.addEventListener("click", () => {
-  const mastheadBottom = document.querySelector(".masthead").getBoundingClientRect().bottom;
-  let anchor = "";
-  for (const section of positions) {
-    if (section.getBoundingClientRect().top > mastheadBottom + 30) break;
-    anchor = section.id;
-  }
-  languageLink.hash = anchor;
-});
+function syncSection() {
+  languageLink.hash = location.hash;
+}
+
+window.addEventListener("hashchange", syncSection);
+window.addEventListener("pageshow", syncSection);
+syncSection();
