@@ -2,30 +2,16 @@
 
 NAME = "Yunze Han"
 NAME_JA = "韓 運澤"
-EMAIL = "han.yunze.57i@st.kyoto-u.ac.jp"
-OTHER_EMAIL = "hanyunze19981203@outlook.com"
+MASKED_EMAIL = "hanyunze19981203*outlook.com"
 ORCID = "https://orcid.org/0009-0006-6268-6986"
 RESEARCHMAP = "https://researchmap.jp/yunzehan"
-
-ROLE = (
-    "PhD student in Natural Resource Economics",
-    "大学院農学研究科 生物資源経済学専攻 博士後期課程",
-)
-BIO = (
-    "My fields are agricultural and development economics. I study how rural institutions "
-    "and public policies shape livelihoods, health, and cooperation in China and Sri Lanka.",
-    "専門は農業経済学と開発経済学です。中国とスリランカを対象に、農村の制度や公共政策が人々の生計や健康、地域での協力に与える影響を研究しています。",
-)
-INTERESTS = (
-    "Agricultural economics, development economics, public economics, labor economics, and economic policy",
-    "農業経済学、開発経済学、公共経済学、労働経済学、経済政策",
-)
 
 PUBLICATIONS = [
     {
         "id": "taobao-villages",
         "title": "Does Rural E-Commerce Reduce Street Crime? Evidence From Taobao Villages in China",
         "authors": [NAME, "Qing Sun", "Kei Kajisa"],
+        "corresponding": "Qing Sun",
         "journal": "Bulletin of Economic Research",
         "year": "2026",
         "doi": "10.1111/boer.70090",
@@ -63,6 +49,32 @@ PUBLICATIONS = [
     },
 ]
 
+CHINESE_PUBLICATIONS = [
+    {
+        "title": "全球大型农业和食品业合作社的发展历程、现状与多维贡献",
+        "authors": ["曹斌", "原嘉毅", "韩运泽"],
+        "journal": "中国农民合作社", "year": "2026", "issue": "10", "pages": "第58页起",
+    },
+    {
+        "title": "中国税务的财政监管问题探讨——以城镇土地使用税为例",
+        "authors": ["韩运泽"],
+        "journal": "财富时代", "year": "2020", "issue": "10", "pages": "179–180页",
+        "url": "https://oversea.cnki.net/kcms2/article/abstract?v=q-VwKjT1PfwYfy78BlCJK9S9eIwp0d5WQt1s1jkgn5VuhWe_09kuWLpAtpkwl-CjUmBu98SdkzMxyEl2vvJVI1RDCBNtVtBPzggMujzzHMHLxeTaK5MAdgIhgctx4RNDfwGfO0x5U66g_6ersXCc-972wbi3gyJl2lcp3O5yt3kNKpD5MQ7D0w==&uniplatform=OVERSEA&language=CHS",
+    },
+    {
+        "title": "2020年美股熔断的原因分析及对中国的启示",
+        "authors": ["韩运泽"],
+        "journal": "决策探索(下)", "year": "2020", "issue": "10", "pages": "22–23页",
+        "url": "https://doi.org/10.16324/j.cnki.jcts.2020.10.012",
+    },
+    {
+        "title": "线上教学的时代真的来临了吗？——中学生网上学习效果研究",
+        "authors": ["韩运泽", "蒋瀛珅"],
+        "journal": "求学", "year": "2020", "issue": "36", "pages": "59–60页",
+        "url": "https://oversea.cnki.net/kcms2/article/abstract?v=q-VwKjT1Pfxf0fVJe7nqEWQnAZCm4BfVQiWUZ061cK0NhcA0jAsraWVl-fCt-MKPA2f9BaCUe4O_-jrpTbL563kXuZ1dTJW0q0PlOd_-SuWzGk79Scy2oJ7lhl_1079xphdxyLiiWPTh1miKq9GdhqbuqyBC63s_xraKxcauXePqLB3d5s3pug==&uniplatform=OVERSEA&language=CHS",
+    },
+]
+
 WORKING_PAPERS = [
     {
         "id": "collective-labor",
@@ -95,6 +107,7 @@ WORKING_PAPERS = [
     },
     {
         "id": "motorway-expansion",
+        "program_only": True,
         "title": "The Unintended Consequences of Motorway Expansion for Street and Neighborhood Crime in China",
         "authors": [NAME, "Kei Kajisa"],
         "meetings": [

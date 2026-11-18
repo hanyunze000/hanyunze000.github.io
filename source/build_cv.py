@@ -1,5 +1,6 @@
 """Create the English public CV from the same academic record as the website."""
 
+import os
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -7,6 +8,9 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import HRFlowable, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 import profile_data as p
@@ -30,11 +34,11 @@ def style(name, font, size, leading, color=INK, **options):
 
 STYLES = {
     "title": style("name", "Times-Roman", 33, 36),
-    "lead": style("affiliation", "Helvetica", 11, 16, GREEN),
     "section": style("section", "Times-Bold", 18, 22, GREEN, spaceBefore=13, spaceAfter=7),
     "paper": style("paper title", "Times-Bold", 12.2, 15.5, spaceAfter=3),
     "body": style("body", "Helvetica", 10.3, 14.4),
     "note": style("note", "Helvetica", 9.6, 13.4, MUTED),
+    "journal": style("journal", "Helvetica", 10.5, 14.5, GREEN),
     "meeting": style("conference", "Helvetica", 9.4, 13.5, MUTED, leftIndent=11),
     "date": style("date", "Helvetica", 9.2, 14.4, MUTED, alignment=TA_RIGHT),
 }
@@ -56,14 +60,16 @@ def paper_flowables(item):
     for author in item["authors"]:
         name = f"<b>{escape(author)}</b>" if author == p.NAME else escape(author)
         if author == item.get("corresponding"):
-            name += " (corresponding author)"
+            name += "<super>*</super>"
         names.append(name)
     lines = [para(title, "paper"), para(", ".join(names))]
     if "journal" in item:
         cite = f', {item["citation"]}' if "citation" in item else ""
         doi = link(item["doi"], "https://doi.org/" + item["doi"])
-        lines.append(para(f'<i>{escape(item["journal"])}</i>{cite} ({item["year"]}) · {doi}', "note"))
+        lines.append(para(f'<i>{escape(item["journal"])}</i>{cite} ({item["year"]}) · {doi}', "journal"))
     if "meetings" in item:
+        label = "Conference program listing for this paper" if item.get("program_only") else "Presentations of this paper"
+        lines.append(para(label, "meeting"))
         for event in item["meetings"]:
             event_link = link(en(event["name"]), event["url"])
             note = f' · {en(event["note"])}' if "note" in event else ""
@@ -72,6 +78,23 @@ def paper_flowables(item):
         lines.extend([Spacer(1, 6), para(escape(en(item["summary"])))])
     lines.append(Spacer(1, 14))
     return KeepTogether(lines)
+
+
+def chinese_papers():
+    font_file = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts" / "simsun.ttc"
+    if font_file.exists():
+        font = TTFont("ChineseRecord", str(font_file), subfontIndex=0)
+    else:
+        font = UnicodeCIDFont("STSong-Light")
+    pdfmetrics.registerFont(font)
+    chinese = style("Chinese publication", font.fontName, 10.1, 14, wordWrap="CJK")
+    citation = style("Chinese citation", font.fontName, 9, 12, MUTED, wordWrap="CJK")
+    rows = []
+    for item in p.CHINESE_PUBLICATIONS:
+        title = link(item["title"], item["url"]) if item.get("url") else escape(item["title"])
+        credit = ("、".join(item["authors"]) + f'　《{item["journal"]}》　{item["year"]}年第{item["issue"]}期，{item["pages"]}')
+        rows.append(KeepTogether([Paragraph(title, chinese), Paragraph(escape(credit), citation), Spacer(1, 5)]))
+    return rows
 
 
 def cv_table(rows):
@@ -105,21 +128,22 @@ def footer(canvas, doc):
 def build():
     doc = SimpleDocTemplate(str(ROOT / "assets" / "yunze-han-cv.pdf"), pagesize=A4,
                             leftMargin=45, rightMargin=45, topMargin=36, bottomMargin=47,
-                            title="Yunze Han — Curriculum Vitae", author=p.NAME,
+                            title="Yunze Han — Curriculum Vitae", author=p.NAME, invariant=1,
                             subject="Agricultural and development economics")
     story = [
         para(p.NAME, "title"),
-        para("PhD student in Natural Resource Economics · Graduate School of Agriculture, Kyoto University", "lead"),
         Spacer(1, 5),
-        para(link(p.EMAIL, "mailto:" + p.EMAIL) + "  ·  " + link("researchmap", p.RESEARCHMAP)
+        para(p.MASKED_EMAIL + " (replace * with @)  ·  " + link("researchmap", p.RESEARCHMAP)
              + "  ·  " + link("ORCID 0009-0006-6268-6986", p.ORCID), "note"),
         Spacer(1, 6),
         HRFlowable(width="100%", thickness=0.8, color=colors.HexColor(CLAY)),
         para("Education", "section"), cv_table(p.EDUCATION),
-        para("Research interests", "section"), para(en(p.INTERESTS)),
         para("Publications", "section"),
+        para("* Corresponding author", "note"), Spacer(1, 4),
     ]
     story.extend(paper_flowables(item) for item in p.PUBLICATIONS)
+    story.append(para("Chinese-language publications", "section"))
+    story.extend(chinese_papers())
     story.extend([PageBreak(), para("Working papers", "section")])
     story.extend(paper_flowables(item) for item in p.WORKING_PAPERS)
     story.extend([PageBreak(), para("Research, teaching &amp; service", "section"), cv_table(p.APPOINTMENTS),

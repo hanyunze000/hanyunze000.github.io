@@ -4,7 +4,6 @@ import json
 from hashlib import sha256
 from html import escape
 from pathlib import Path
-from urllib.parse import quote
 
 import profile_data as p
 
@@ -30,8 +29,9 @@ def authors(paper, lang):
         if author == p.NAME:
             name = f"<strong>{name}</strong>"
         if author == paper.get("corresponding"):
-            label = local(("(corresponding author)", "（責任著者）"), lang)
-            name += f' <span class="author-note" lang="{lang}">{label}</span>'
+            label = local(("Corresponding author", "責任著者"), lang)
+            name = (f'<span class="marked-author">{name}<sup title="{label}">'
+                    f'<span aria-hidden="true">*</span><span class="sr-only" lang="{lang}"> {label}</span></sup></span>')
         names.append(name)
     return ", ".join(names)
 
@@ -58,7 +58,7 @@ def meetings(paper, lang):
     return f'<div class="meetings"><ul>{"".join(rows)}</ul></div>'
 
 
-def paper_entry(paper, lang, compact=False):
+def paper_entry(paper, lang):
     def tr(en, ja):
         return local((en, ja), lang)
 
@@ -73,25 +73,24 @@ def paper_entry(paper, lang, compact=False):
                    f'<i lang="en">{escape(paper["journal"])}</i>{cite}</p>')
         action = f'<a class="article-link" href="{url}">{tr("Read article", "論文を読む")} <span aria-hidden="true">↗</span></a>'
     else:
-        subject = quote("Paper request: " + paper["title"], safe="")
-        action = (f'<a class="request-link" href="mailto:{p.EMAIL}?subject={subject}">'
-                  f'{tr("Request a draft", "草稿を依頼")} <span aria-hidden="true">↗</span></a>')
+        action = (f'<a class="request-link" href="#contact">'
+                  f'{tr("Email for a draft", "草稿の問い合わせ先")}</a>')
 
     count = len(paper.get("meetings", []))
-    if published and not compact:
+    if published:
         detail_text = f'<p class="paper-summary">{escape(local(paper["summary"], lang))}</p>'
         if "earlier_version" in paper:
             detail_text += (f'<a class="version-link" href="{paper["earlier_version"]}">'
                             f'{tr("Discussion paper at Kyoto University", "京都大学のディスカッションペーパー版")} ↗</a>')
         details += f'<details class="disclosure"><summary>{tr("Research summary", "研究概要")}</summary>{detail_text}</details>'
     if count:
-        if paper["id"] == "motorway-expansion":
-            label = tr("Conference program", "学会プログラム")
+        if paper.get("program_only"):
+            label = tr("Conference program listing for this paper", "この論文の大会プログラム掲載情報")
         else:
-            label = tr(f"Presentations ({count})", f"研究発表（{count}件）")
+            label = tr(f"Presentations of this paper ({count})", f"この論文の研究発表（{count}件）")
         details += f'<details class="disclosure"><summary>{label}</summary>{meetings(paper, lang)}</details>'
-    return (f'<article class="paper" id="{paper["id"]}" data-position><div class="paper-line">'
-            f'<div class="paper-info">{journal}<h3 lang="en">{title}</h3>'
+    return (f'<article class="paper" id="{paper["id"]}"><div class="paper-line">'
+            f'<div class="paper-info">{journal}<h4 class="paper-title" lang="en">{title}</h4>'
             f'<p class="authors" lang="en">{authors(paper, lang)}</p></div>'
             f'<div class="paper-action">{action}</div></div>'
             f'<div class="paper-details">{details}</div></article>')
@@ -106,107 +105,72 @@ def cv_rows(rows, lang):
     return f'<ul class="cv-rows">{"".join(entries)}</ul>'
 
 
-PAGES = {
-    "home": ("index.html", "ja.html"),
-    "research": ("research.html", "research-ja.html"),
-    "projects": ("projects.html", "projects-ja.html"),
-    "cv": ("cv.html", "cv-ja.html"),
-}
+EDITIONS = {"en": "index.html", "ja": "ja.html"}
 
 
-def render(lang, page):
+def chinese_publications(lang):
+    label = local(("Chinese-language publications", "中国語の掲載論文"), lang)
+    records = []
+    for item in p.CHINESE_PUBLICATIONS:
+        title = escape(item["title"])
+        if item.get("url"):
+            title = f'<a href="{escape(item["url"], quote=True)}">{title}</a>'
+        names = "、".join(f'<strong>{escape(name)}</strong>' if name == "韩运泽" else escape(name)
+                         for name in item["authors"])
+        records.append(f'<li><p class="chinese-title">{title}</p><p class="chinese-citation">'
+                       f'{names} · 《{escape(item["journal"])}》 · {item["year"]}年第{item["issue"]}期，'
+                       f'{escape(item["pages"])}</p></li>')
+    return (f'<details id="chinese-publications" class="chinese-pubs collection">'
+            f'<summary>{label} <span class="count">({len(records)})</span></summary>'
+            f'<ul class="chinese-list" lang="zh-Hans">{"".join(records)}</ul></details>')
+
+
+def render(lang):
     def tr(en, ja):
         return local((en, ja), lang)
 
-    def path(key):
-        return local(PAGES[key], lang)
-
-    def section(sid, heading, body, jump=""):
-        return (f'<section class="page-section" id="{sid}" aria-labelledby="{sid}-heading" data-position>'
-                f'<div class="section-top"><h2 id="{sid}-heading">{heading}</h2>{jump}</div>{body}</section>')
-
-    def page_intro(heading, extra=""):
-        return f'<div class="wrap page-intro"><h1>{heading}</h1>{extra}</div>'
+    def cv_section(sid, heading, content):
+        return (f'<section class="cv-group" id="{sid}" aria-labelledby="{sid}-heading">'
+                f'<h2 id="{sid}-heading">{heading}</h2><div>{content}</div></section>')
 
     alt_lang = tr("ja", "en")
     name, native = (p.NAME, p.NAME_JA) if lang == "en" else (p.NAME_JA, p.NAME)
-    titles = {
-        "home": tr("Agricultural and Development Economics", "農業経済学・開発経済学"),
-        "research": tr("Research", "研究"), "projects": tr("Research projects", "調査プロジェクト"),
-        "cv": tr("Curriculum vitae", "略歴"),
-    }
-    description = tr(
-        "Yunze Han studies agricultural and development economics at Kyoto University. Publications, working papers, field projects, and academic CV.",
-        "京都大学大学院で農業経済学・開発経済学を研究する韓運澤のホームページ。学術論文、ワーキングペーパー、調査プロジェクト、略歴を掲載しています。",
-    )
-    external = '<span class="arrow" aria-hidden="true">↗</span>'
-    publications_label = tr("Publications", "学術論文")
-    working_label = tr("Working papers", "ワーキングペーパー")
-    cv_download = tr("Download CV (PDF)", "英文CV（PDF）")
-    download = f'<a class="primary-link" href="assets/yunze-han-cv.pdf">{cv_download} <span aria-hidden="true">↓</span></a>'
-    if page == "home":
-        hero = f"""
-        <section class="profile" aria-labelledby="profile-name"><div class="wrap profile-inner">
-          <div class="profile-copy">
-            <p class="affiliation">{tr("Kyoto University", "京都大学")}</p>
-            <h1 id="profile-name">{name}<span class="other-name" lang="{alt_lang}">{native}</span></h1>
-            <p class="role">{local(p.ROLE, lang)}</p>
-            <p class="bio">{local(p.BIO, lang)}</p>
-            <ul class="profile-links" aria-label="{tr("Contact and research profiles", "連絡先・研究者プロフィール")}">
-              <li><a href="mailto:{p.EMAIL}">{tr("Email", "メール")}</a></li>
-              <li><a href="{p.RESEARCHMAP}" lang="en">researchmap {external}</a></li>
-              <li><a href="{p.ORCID}" lang="en">ORCID {external}</a></li>
-            </ul>
-          </div>
-          <div class="portrait-frame"><img src="assets/portrait.jpg" alt="{tr("Yunze Han in the mountains", "山を背景にした韓運澤の写真")}" width="720" height="864"></div>
-        </div></section>"""
-        working_link = f'<a class="text-link" href="{path("research")}#working-papers">{working_label} <span aria-hidden="true">→</span></a>'
-        entries = "".join(paper_entry(item, lang, compact=True) for item in p.PUBLICATIONS)
-        body = hero + '<div class="wrap">' + section("publications", publications_label, entries, working_link) + '</div>'
-    elif page == "research":
-        contents = (f'<nav class="jump-links" aria-label="{tr("Research sections", "研究の目次")}">'
-                    f'<a href="#publications">{publications_label}</a><a href="#working-papers">{working_label}</a></nav>')
-        pubs = section("publications", publications_label, "".join(paper_entry(item, lang) for item in p.PUBLICATIONS))
-        working = section("working-papers", working_label, "".join(paper_entry(item, lang) for item in p.WORKING_PAPERS))
-        body = page_intro(titles[page], contents) + f'<div class="wrap">{pubs}{working}</div>'
-    elif page == "projects":
-        intro = tr("I work on project evaluations at the JICA Ogata Sadako Research Institute for Peace and Development.",
-                   "JICA緒方貞子平和開発研究所で、開発プロジェクトの効果検証に携わっています。")
-        projects = []
-        for project, sid in zip(p.FIELDWORK, ("sri-lanka", "uganda")):
-            heading = escape(local(project["title"], lang))
-            detail = escape(local(project["detail"], lang))
-            projects.append(f'<article class="project" id="{sid}" data-position><p class="small-label">{local(project["country"], lang)}</p>'
-                            f'<div><h2>{heading}</h2><p>{detail}</p></div></article>')
-        body = page_intro(titles[page], f'<p class="intro-text">{intro}</p>') + f'<div class="wrap project-list">{"".join(projects)}</div>'
-    else:
-        groups = [
-            ("education", tr("Education", "学歴"), cv_rows(p.EDUCATION, lang)),
-            ("interests", tr("Research interests", "研究分野"), f'<p>{local(p.INTERESTS, lang)}</p>'),
-            ("appointments", tr("Research, teaching & service", "研究・教育・学内業務"), cv_rows(p.APPOINTMENTS, lang)),
-            ("awards", tr("Fellowships & awards", "奨学金・受賞"), cv_rows(p.AWARDS, lang)),
-        ]
-        memberships = "".join(
-            f'<li><span>{escape(local(society, lang))}</span><span class="cv-date">{tr("Since " + year, year + "年より")}</span></li>'
-            for year, society in p.MEMBERSHIPS
-        )
-        groups.extend([
-            ("memberships", tr("Academic memberships", "所属学会"), f'<ul class="memberships">{memberships}</ul>'),
-            ("other-experience", tr("Other professional experience", "その他の職歴"), cv_rows(p.OTHER_EXPERIENCE, lang)),
-        ])
-        entries = "".join(f'<section class="cv-group" id="{sid}" data-position><h2>{heading}</h2><div>{html}</div></section>'
-                          for sid, heading, html in groups)
-        body = page_intro(titles[page], download) + f'<div class="wrap cv-list">{entries}</div>'
-
+    description = tr("Yunze Han at Kyoto University. Publications, working papers, education, and field projects.",
+                     "京都大学の韓運澤の個人ページ。学歴、論文、ワーキングペーパー、調査プロジェクトを掲載しています。")
     info = {"@context": "https://schema.org", "@type": "Person", "name": p.NAME,
-            "alternateName": ["韩运泽", p.NAME_JA], "email": f"mailto:{p.EMAIL}",
+            "alternateName": ["韩运泽", p.NAME_JA],
             "affiliation": {"@type": "CollegeOrUniversity", "name": "Kyoto University"},
             "sameAs": [p.ORCID, p.RESEARCHMAP]}
-    nav = []
-    for key, label in (("research", tr("Research", "研究")), ("projects", tr("Projects", "プロジェクト")), ("cv", tr("CV", "略歴"))):
-        current = ' aria-current="page"' if page == key else ""
-        nav.append(f'<a href="{path(key)}"{current}>{label}</a>')
-    extra_contact = f' · <a href="mailto:{p.OTHER_EMAIL}">{p.OTHER_EMAIL}</a>' if page == "cv" else ""
+    arrow = '<span class="arrow" aria-hidden="true">↗</span>'
+    labels = {
+        "education": tr("Education", "学歴"), "research": tr("Research", "研究"),
+        "projects": tr("Projects", "プロジェクト"), "experience": tr("Experience", "経歴"),
+    }
+    nav = "".join(f'<a href="#{sid}">{label}</a>' for sid, label in labels.items())
+    pubs = "".join(paper_entry(item, lang) for item in p.PUBLICATIONS)
+    working = "".join(paper_entry(item, lang) for item in p.WORKING_PAPERS)
+    education = cv_section("education", labels["education"], cv_rows(p.EDUCATION, lang))
+
+    projects = []
+    for project, sid in zip(p.FIELDWORK, ("sri-lanka", "uganda")):
+        projects.append(f'<article class="project" id="{sid}">'
+                        f'<p class="small-label">{escape(local(project["country"], lang))}</p>'
+                        f'<div><h3>{escape(local(project["title"], lang))}</h3>'
+                        f'<p>{escape(local(project["detail"], lang))}</p></div></article>')
+
+    memberships = "".join(
+        f'<li><span>{escape(local(society, lang))}</span><span class="cv-date">{tr("Since " + year, year + "年より")}</span></li>'
+        for year, society in p.MEMBERSHIPS
+    )
+    experience = [
+        ("appointments", tr("Research, teaching &amp; service", "研究・教育・学内業務"), cv_rows(p.APPOINTMENTS, lang)),
+        ("awards", tr("Fellowships &amp; awards", "奨学金・受賞"), cv_rows(p.AWARDS, lang)),
+        ("memberships", tr("Academic memberships", "所属学会"), f'<ul class="memberships">{memberships}</ul>'),
+        ("other-experience", tr("Other professional experience", "その他の職歴"), cv_rows(p.OTHER_EXPERIENCE, lang)),
+    ]
+    background = "".join(f'<section class="cv-group" id="{sid}" aria-labelledby="{sid}-heading">'
+                         f'<h3 id="{sid}-heading">{label}</h3><div>{content}</div></section>'
+                         for sid, label, content in experience)
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -214,34 +178,90 @@ def render(lang, page):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fafaf7">
   <meta name="description" content="{escape(description, quote=True)}">
-  <title>{tr(p.NAME, p.NAME_JA)} | {titles[page]}</title>
-  <link rel="alternate" hreflang="en" href="{PAGES[page][0]}">
-  <link rel="alternate" hreflang="ja" href="{PAGES[page][1]}">
-  <link rel="alternate" hreflang="x-default" href="{PAGES[page][0]}">
+  <title>{name} | {tr("Academic homepage", "研究者ホームページ")}</title>
+  <link rel="alternate" hreflang="en" href="index.html">
+  <link rel="alternate" hreflang="ja" href="ja.html">
+  <link rel="alternate" hreflang="x-default" href="index.html">
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="stylesheet" href="{asset("style.css")}">
   <script src="{asset("language.js")}" defer></script>
   <script type="application/ld+json">{json.dumps(info, ensure_ascii=False)}</script>
 </head>
-<body id="top" class="page-{page}">
+<body id="top">
   <a class="skip-link" href="#main">{tr("Skip to content", "本文へ移動")}</a>
   <header class="masthead"><div class="wrap masthead-inner">
-    <a class="brand" href="{path("home")}" aria-label="{tr("Yunze Han, homepage", "韓運澤のホームページ")}"><span class="seal" aria-hidden="true" lang="ja">韓</span><span lang="en">Yunze Han</span></a>
-    <nav aria-label="{tr("Main navigation", "メインナビゲーション")}">{"".join(nav)}
-      <a class="language-switch" href="{local(PAGES[page], alt_lang)}" hreflang="{alt_lang}" lang="{alt_lang}"
-         aria-label="{tr("日本語で読む", "Read in English")}">{tr("日本語", "English")}</a>
-    </nav></div></header>
-  <main id="main">{body}</main>
+    <a class="brand" href="#top" aria-label="{tr("Yunze Han, homepage", "韓運澤のホームページ")}"><span class="seal" aria-hidden="true" lang="ja">韓</span><span lang="en">Yunze Han</span></a>
+    <nav class="section-nav" aria-label="{tr("Main navigation", "メインナビゲーション")}">{nav}</nav>
+    <a class="language-switch" href="{EDITIONS[alt_lang]}" hreflang="{alt_lang}" lang="{alt_lang}" aria-label="{tr("日本語で読む", "Read in English")}">{tr("日本語", "English")}</a>
+  </div></header>
+  <main id="main">
+    <section class="profile" aria-labelledby="profile-name"><div class="wrap profile-inner">
+      <div class="profile-copy">
+        <h1 id="profile-name">{name}<span class="other-name" lang="{alt_lang}">{native}</span></h1>
+        <div id="contact" class="contact">
+          <p><span class="contact-label">{tr("Email", "メール")}</span> <span class="email-address" dir="ltr">{p.MASKED_EMAIL}</span></p>
+          <p class="contact-hint">{tr("Replace * with @ when emailing.", "送信時は * を @ に置き換えてください。")}</p>
+        </div>
+        <ul class="profile-links" aria-label="{tr("Research profiles", "研究者プロフィール")}">
+          <li><a href="{p.RESEARCHMAP}" lang="en">researchmap {arrow}</a></li>
+          <li><a href="{p.ORCID}" lang="en">ORCID {arrow}</a></li>
+        </ul>
+      </div>
+      <div class="portrait-frame"><img src="assets/portrait.jpg" alt="{tr("Yunze Han in the mountains", "山を背景にした韓運澤の写真")}" width="720" height="864"></div>
+    </div></section>
+    <div class="wrap page-content">
+      {education}
+      <section class="page-section" id="research" aria-labelledby="research-heading">
+        <h2 id="research-heading">{labels["research"]}</h2>
+        <div id="publications" class="publications">
+          <div class="subsection-head"><h3>{tr("Publications", "学術論文")}</h3>
+            <p class="paper-key"><span aria-hidden="true">*</span> {tr("Corresponding author", "責任著者")}</p></div>
+          {pubs}
+          {chinese_publications(lang)}
+        </div>
+        <details id="working-papers" class="working-papers collection">
+          <summary><h3>{tr("Working papers", "ワーキングペーパー")} <span class="count">({len(p.WORKING_PAPERS)})</span></h3></summary>
+          {working}
+        </details>
+      </section>
+      <section class="page-section" id="projects" aria-labelledby="projects-heading">
+        <h2 id="projects-heading">{tr("Research projects", "調査プロジェクト")}</h2>
+        <p class="section-intro">{tr("I work on project evaluations at the JICA Ogata Sadako Research Institute for Peace and Development.", "JICA緒方貞子平和開発研究所で、開発プロジェクトの効果検証に携わっています。")}</p>
+        {"".join(projects)}
+      </section>
+      <section class="page-section experience" id="experience" aria-labelledby="experience-heading">
+        <h2 id="experience-heading">{labels["experience"]}</h2>{background}
+      </section>
+    </div>
+  </main>
   <footer class="footer"><div class="wrap footer-inner">
-    <div><span lang="en">Yunze Han</span><span class="footer-dot" aria-hidden="true"> · </span>{tr("Kyoto University", "京都大学")}
-      <p><a href="mailto:{p.EMAIL}">{p.EMAIL}</a>{extra_contact}</p></div>
+    <a href="{asset("yunze-han-cv.pdf")}">{tr("Download CV (PDF)", "英文CV（PDF）")} <span aria-hidden="true">↓</span></a>
     <a class="back-link" href="#top">{tr("Back to top", "ページの先頭へ")} ↑</a>
   </div></footer>
 </body></html>
 """
 
 
+def redirect(lang, default_section):
+    """Keep published bookmarks to the earlier multi-page site working."""
+    home = EDITIONS[lang]
+    url = home + "#" + default_section
+    label = local(("Go to the homepage", "ホームページへ移動"), lang)
+    return f"""<!doctype html>
+<html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{local((p.NAME, p.NAME_JA), lang)}</title><link rel="canonical" href="https://hanyunze000.github.io/{home}">
+<script>
+const oldAnchor = location.hash;
+const section = !oldAnchor || ["#interests", "#top", "#main"].includes(oldAnchor) ? "#{default_section}" : oldAnchor;
+location.replace("{home}" + section);
+</script><noscript><meta http-equiv="refresh" content="0;url={url}"></noscript></head>
+<body><p><a href="{url}">{label}</a></p></body></html>
+"""
+
+
 if __name__ == "__main__":
-    for key, filenames in PAGES.items():
-        for language, filename in zip(("en", "ja"), filenames):
-            (ROOT / filename).write_text(render(language, key), encoding="utf-8")
+    for language, filename in EDITIONS.items():
+        (ROOT / filename).write_text(render(language), encoding="utf-8")
+        suffix = "-ja" if language == "ja" else ""
+        for legacy, section in (("research", "research"), ("projects", "projects"), ("cv", "education")):
+            (ROOT / f"{legacy}{suffix}.html").write_text(redirect(language, section), encoding="utf-8")
