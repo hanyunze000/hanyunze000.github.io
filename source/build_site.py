@@ -23,6 +23,19 @@ def local(value, lang):
     return value[0 if lang == "en" else 1]
 
 
+def prose(value, lang):
+    """Keep each supplied phrase together when it fits on a line."""
+    text = local(value, lang)
+    if isinstance(text, str):
+        return escape(text)
+    return "<wbr>".join(f'<span class="phrase">{escape(phrase)}</span>' for phrase in text)
+
+
+def new_tab_attrs(url, lang):
+    hint = local(("Open in a new tab", "新しいタブで開く"), lang)
+    return f'href="{escape(url, quote=True)}" target="_blank" rel="noopener" title="{hint}"'
+
+
 def authors(paper, lang):
     names = []
     for author in paper["authors"]:
@@ -31,9 +44,9 @@ def authors(paper, lang):
             name = f"<strong>{name}</strong>"
         if author == paper.get("corresponding"):
             label = local(("Corresponding author", "責任著者"), lang)
-            name = (f'<span class="marked-author">{name}<sup title="{label}">'
-                    f'<span aria-hidden="true">*</span><span class="sr-only" lang="{lang}"> {label}</span></sup></span>')
-        names.append(name)
+            name += (f'<sup title="{label}"><span aria-hidden="true">*</span>'
+                     f'<span class="sr-only" lang="{lang}"> {label}</span></sup>')
+        names.append(f'<span class="paper-author">{name}</span>')
     return ", ".join(names)
 
 
@@ -67,23 +80,18 @@ def paper_entry(paper, lang):
     title = escape(paper["title"])
     journal = details = action = ""
     if published:
-        url = "https://doi.org/" + paper["doi"]
-        title = f'<a href="{url}">{title}</a>'
+        link_attrs = new_tab_attrs("https://doi.org/" + paper["doi"], lang)
+        title = f'<a {link_attrs}>{title}</a>'
         journal = (f'<p class="journal"><span class="pub-year">{paper["year"]}</span>'
                    f'<i lang="en">{escape(paper["journal"])}</i></p>')
-        action = (f'<div class="paper-action"><a class="article-link" href="{url}" target="_blank" rel="noopener" '
-                  f'title="{tr("Open in a new tab", "新しいタブで開く")}">{tr("Read article", "論文を読む")}'
+        action = (f'<div class="paper-action"><a class="article-link" {link_attrs}>{tr("Read article", "論文を読む")}'
                   f' <span aria-hidden="true">↗</span></a></div>')
 
-    count = len(paper.get("meetings", []))
     if published:
-        detail_text = f'<p class="paper-summary">{escape(local(paper["summary"], lang))}</p>'
+        detail_text = f'<p class="paper-summary">{prose(paper["summary"], lang)}</p>'
         details += f'<details class="disclosure"><summary>{tr("Research summary", "研究概要")}</summary>{detail_text}</details>'
-    if count:
-        if paper.get("program_only"):
-            label = tr("Conference for this paper", "この論文に関連する学会")
-        else:
-            label = tr(f"Presentations of this paper ({count})", f"この論文の研究発表（{count}件）")
+    if paper.get("meetings"):
+        label = local(p.presentation_heading(paper["meetings"]), lang)
         details += f'<details class="disclosure"><summary>{label}</summary>{meetings(paper, lang)}</details>'
     return (f'<article class="paper" id="{paper["id"]}"><div class="paper-line">'
             f'<div class="paper-info">{journal}<h4 class="paper-title" lang="en">{title}</h4>'
@@ -141,7 +149,7 @@ def render(lang, edition_query=""):
 
     alt_lang = tr("ja", "en")
     name, native = (p.NAME, p.NAME_JA) if lang == "en" else (p.NAME_JA, p.NAME)
-    description = tr("Yunze Han at Kyoto University. Publications, working papers, education, and field projects.",
+    description = tr("Yunze Han at Kyoto University. Publications, working papers, education, and research projects.",
                      "京都大学の韓運澤の個人ページ。学歴、論文、ワーキングペーパー、研究プロジェクトを掲載しています。")
     info = {"@context": "https://schema.org", "@type": "Person", "name": p.NAME,
             "alternateName": ["韩运泽", p.NAME_JA],
@@ -158,12 +166,16 @@ def render(lang, edition_query=""):
     working = "".join(paper_entry(item, lang) for item in p.WORKING_PAPERS)
     education = cv_section("education", labels["education"], cv_rows(p.EDUCATION, lang))
 
+    project_intro = prose((
+        f"I work on project evaluations at the {p.JICA[0]}.",
+        (f"{p.JICA[1]}で、", "開発事業の効果を検証しています。"),
+    ), lang)
     projects = []
     for project, sid in zip(p.FIELDWORK, ("sri-lanka", "uganda")):
         projects.append(f'<article class="project" id="{sid}">'
                         f'<p class="small-label">{escape(local(project["country"], lang))}</p>'
-                        f'<div><h3>{escape(local(project["title"], lang))}</h3>'
-                        f'<p>{escape(local(project["detail"], lang))}</p></div></article>')
+                        f'<div><h3>{prose(project["title"], lang)}</h3>'
+                        f'<p>{prose(project["detail"], lang)}</p></div></article>')
 
     memberships = "".join(
         f'<li><span>{escape(local(society, lang))}</span><span class="cv-date">{tr("Since " + year, year + "年より")}</span></li>'
@@ -211,7 +223,7 @@ def render(lang, edition_query=""):
           <p class="contact-hint">{tr("Replace * with @ when emailing.", "送信時は * を @ に置き換えてください。")}</p>
         </div>
         <ul class="profile-links" aria-label="{tr("Research profiles", "研究者プロフィール")}">
-          <li><a href="{p.RESEARCHMAP}" lang="en">researchmap {arrow}</a></li>
+          <li><a {new_tab_attrs(p.RESEARCHMAP, lang)} lang="en">researchmap {arrow}</a></li>
         </ul>
       </div>
       <div class="portrait-frame"><img src="assets/portrait.jpg" alt="{tr("Yunze Han in the mountains", "山を背景にした韓運澤の写真")}" width="720" height="864"></div>
@@ -232,7 +244,7 @@ def render(lang, edition_query=""):
       </section>
       <section class="page-section" id="projects" aria-labelledby="projects-heading">
         <h2 id="projects-heading">{tr("Research projects", "研究プロジェクト")}</h2>
-        <p class="section-intro">{tr("I work on project evaluations at the JICA Ogata Sadako Research Institute for Peace and Development.", "JICA緒方貞子平和開発研究所で、開発プロジェクトの効果検証に携わっています。")}</p>
+        <p class="section-intro">{project_intro}</p>
         {"".join(projects)}
       </section>
       <section class="page-section experience" id="experience" aria-labelledby="experience-heading">
@@ -245,7 +257,7 @@ def render(lang, edition_query=""):
     </div>
   </main>
   <footer class="footer"><div class="wrap footer-inner">
-    <a href="{asset("yunze-han-cv.pdf")}">{tr("Download CV (PDF)", "英文CV（PDF）")} <span aria-hidden="true">↓</span></a>
+    <a {new_tab_attrs(asset("yunze-han-cv.pdf"), lang)}>{tr("Download CV (PDF)", "英文CV（PDF）")} <span aria-hidden="true">↓</span></a>
     <a class="back-link" href="#top">{tr("Back to top", "ページの先頭へ")} ↑</a>
   </div></footer>
 </body></html>

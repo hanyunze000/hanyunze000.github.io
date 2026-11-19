@@ -66,9 +66,8 @@ def paper_flowables(item):
     if "journal" in item:
         doi = link(item["doi"], "https://doi.org/" + item["doi"])
         lines.append(para(f'<i>{escape(item["journal"])}</i> ({item["year"]}) · {doi}', "journal"))
-    if "meetings" in item:
-        label = "Conference for this paper" if item.get("program_only") else "Presentations of this paper"
-        lines.append(para(label, "meeting"))
+    if item.get("meetings"):
+        lines.append(para(en(p.presentation_heading(item["meetings"])), "meeting"))
         for event in item["meetings"]:
             event_name = escape(en(event["name"]))
             note = f' · {en(event["note"])}' if "note" in event else ""

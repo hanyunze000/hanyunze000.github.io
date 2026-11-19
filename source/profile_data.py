@@ -5,6 +5,12 @@ NAME_JA = "韓 運澤"
 MASKED_EMAIL = "hanyunze19981203*outlook.com"
 RESEARCHMAP = "https://researchmap.jp/yunzehan"
 
+
+def presentation_heading(meetings):
+    count = len(meetings)
+    return f"Presentations of this paper ({count})", f"本論文の研究発表（{count}件）"
+
+
 PUBLICATIONS = [
     {
         "id": "taobao-villages",
@@ -16,7 +22,8 @@ PUBLICATIONS = [
         "doi": "10.1111/boer.70090",
         "summary": (
             "Using data from 2,872 counties in China, we find that property-related street and neighborhood crime fell in counties where Taobao Villages emerged.",
-            "中国の2,872県のデータを用いて、淘宝村が形成された県では、路上や近隣での財産犯罪が減少したことを示しました。",
+            ("中国の2,872県のデータを用いて、", "淘宝村が形成された県では、", "路上や近隣での",
+             "財産犯罪が", "減少したことを示しました。"),
         ),
     },
     {
@@ -29,7 +36,9 @@ PUBLICATIONS = [
         "doi": "10.1186/s13561-026-00833-w",
         "summary": (
             "In rural China, public health insurance enrollment was associated with higher caloric intake. People who consumed more calories also earned more per working day in the following survey wave.",
-            "中国農村では、公的医療保険の加入者ほど摂取カロリーが高く、また、摂取カロリーが高い人ほど次回調査時の労働日当たり所得が高いという関連が見られました。",
+            ("中国農村では、", "公的医療保険の加入者ほど", "摂取カロリーが高く、",
+             "また、摂取カロリーが高い人ほど", "次回調査時の", "労働日当たり所得が高いという",
+             "関連が見られました。"),
         ),
         "meetings": [
             {
@@ -78,7 +87,6 @@ WORKING_PAPERS = [
     },
     {
         "id": "motorway-expansion",
-        "program_only": True,
         "title": "The Unintended Consequences of Motorway Expansion for Street and Neighborhood Crime in China",
         "authors": [NAME, "Kei Kajisa"],
         "meetings": [
@@ -119,23 +127,25 @@ JICA = (
 FIELDWORK = [
     {
         "country": ("Sri Lanka", "スリランカ"),
-        "title": ("Walawe Left Bank Upgrading and Extension Project", "ワラウェ川左岸灌漑改修・拡張事業"),
+        "title": ("Walawe Left Bank Upgrading and Extension Project", ("ワラウェ川左岸", "灌漑改修・拡張事業")),
         "detail": (
             "I managed field data collection covering about 900 households, 300 agricultural markets, "
             "200 farmer organizations, and more than 100 irrigation canals. I also organized public goods, "
             "ultimatum, and trust games as part of the project evaluation.",
-            "事業評価のため、約900世帯、約300の農産物市場、約200の農民組織、100本を超える用水路を対象とした現地調査を管理しました。"
-            "また、公共財ゲーム、最後通牒ゲーム、信頼ゲームを実施しました。",
+            ("事業評価のため、", "約900世帯、", "約300の農産物市場、", "約200の農民組織、",
+             "100本を超える用水路を対象とした", "現地調査を管理しました。",
+             "また、公共財ゲーム、", "最後通牒ゲーム、", "信頼ゲームを実施しました。"),
         ),
     },
     {
         "country": ("Uganda", "ウガンダ"),
-        "title": ("Northern Uganda Farmers’ Livelihood Improvement Project", "ウガンダ北部農家生計向上プロジェクト"),
+        "title": ("Northern Uganda Farmers’ Livelihood Improvement Project", ("ウガンダ北部", "農家生計向上プロジェクト")),
         "detail": (
             "Working remotely, I analyzed baseline data and helped design the random assignment for the evaluation. "
             "I also supported the analysis of farm income, production, and other indicators of household livelihoods.",
-            "遠隔でベースラインデータを分析し、効果検証のための無作為割付の設計に携わりました。"
-            "農家の所得、生産、生計に関する指標の分析も担当しました。",
+            ("遠隔で", "ベースラインデータを分析し、", "効果検証のための",
+             "無作為割付の設計に携わりました。", "農家の所得、生産、生計に関する",
+             "指標の分析も担当しました。"),
         ),
     },
 ]

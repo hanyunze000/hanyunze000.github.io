@@ -29,6 +29,7 @@
 }
 * { box-sizing: border-box; }
 html { scroll-padding-top: calc(var(--masthead-height) + 18px); }
+html:lang(ja) { line-break: strict; }
 @media (prefers-reduced-motion: no-preference) {
   html:has(a[href^="#"]:focus) { scroll-behavior: smooth; }
 }
@@ -37,6 +38,8 @@ body { margin: 0; padding-top: var(--masthead-height); background: var(--paper);
 h1, h2, h3, h4, p, ul { margin: 0; }
 h1, h2, h3, h4 { color: var(--ink); font: 400 1em/1.2 var(--serif); }
 h1, h2 { letter-spacing: -.045em; }
+p, .cv-rows, .memberships, .meetings { text-wrap: pretty; }
+h2, h3, h4, .section-intro { text-wrap: balance; }
 a { color: var(--green); text-underline-offset: .22em; text-decoration-thickness: 1px; }
 a:hover, summary:hover { color: var(--clay); }
 a:focus-visible, summary:focus-visible { outline: 2px solid var(--clay); outline-offset: 4px; border-radius: 2px; }
@@ -90,8 +93,8 @@ ul { list-style: none; padding: 0; }
 .paper-title a:hover { color: var(--green); text-decoration: underline; }
 .authors { margin-top: 10px; font-size: 17px; line-height: 1.55; }
 .authors strong { font-weight: 600; }
-.marked-author { white-space: nowrap; }
-.marked-author sup { color: var(--green); font-size: .75em; line-height: 0; }
+.paper-author { display: inline-block; max-width: 100%; }
+.paper-author sup { color: var(--green); font-size: .75em; line-height: 0; }
 .paper-action { justify-self: end; padding-top: 4px; }
 .article-link { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; white-space: nowrap; }
 .article-link { padding: 6px 13px; border: 1px solid #a4b4a5; border-radius: 3px; text-decoration: none; font-weight: 600; }
@@ -136,6 +139,9 @@ summary { width: fit-content; cursor: pointer; color: var(--green); }
 .footer a { text-decoration-color: #a7b8a8; }
 html[lang="ja"] .profile h1 { font-size: clamp(43px,5vw,68px); letter-spacing: .02em; }
 html[lang="ja"] .other-name { font-family: var(--serif); letter-spacing: -.025em; }
+.section-intro:lang(ja), .project div > p:lang(ja), .paper-summary:lang(ja) { max-width: 42em; text-wrap: balance; }
+.phrase { display: inline-block; max-width: 100%; }
+:is(.project, .paper-summary, .meetings, .cv-rows, .memberships):lang(ja) { word-break: auto-phrase; }
 html[lang="ja"] .project div > p { line-height: 1.85; }
 html[lang="ja"] .meetings li { grid-template-columns: 6.1em minmax(0,1fr); }
 
