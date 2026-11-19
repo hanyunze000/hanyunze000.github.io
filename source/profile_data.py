@@ -159,7 +159,7 @@ def education_title(level, field):
 
 NATURAL_RESOURCE_ECONOMICS = ("Natural Resource Economics", "生物資源経済学")
 KYOTO_AGRICULTURE = (
-    "Division of Natural Resource Economics, Graduate School of Agriculture, Kyoto University",
+    "Graduate School of Agriculture, Kyoto University",
     "京都大学大学院農学研究科",
 )
 EDUCATION = [
