@@ -151,15 +151,26 @@ FIELDWORK = [
 
 # Each CV row consists of a date, a qualification or role, and an institution.
 # A date range with a note gives its start, end and note in each language.
+def education_title(level, field):
+    level_en, level_ja = level
+    field_en, field_ja = field
+    return f"{level_en} in {field_en}", f"{field_ja}専攻 {level_ja}"
+
+
+NATURAL_RESOURCE_ECONOMICS = ("Natural Resource Economics", "生物資源経済学")
+KYOTO_AGRICULTURE = (
+    "Division of Natural Resource Economics, Graduate School of Agriculture, Kyoto University",
+    "京都大学大学院農学研究科",
+)
 EDUCATION = [
     ((("Oct 2024", "Sep 2027", "(expected)"), ("2024年10月", "2027年9月", "（予定）")),
-     ("Doctoral program, Division of Natural Resource Economics", "生物資源経済学専攻 博士後期課程"),
-     ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
+     education_title(("Doctoral program", "博士後期課程"), NATURAL_RESOURCE_ECONOMICS),
+     KYOTO_AGRICULTURE),
     (("Oct 2022 – Sep 2024", "2022年10月 – 2024年9月"),
-     ("Master’s degree, Division of Natural Resource Economics", "生物資源経済学専攻 修士課程"),
-     ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
+     education_title(("Master’s degree", "修士課程"), NATURAL_RESOURCE_ECONOMICS),
+     KYOTO_AGRICULTURE),
     (("Sep 2017 – Jun 2021", "2017年9月 – 2021年6月"),
-     ("Bachelor’s degree in Financial Management", "財務管理専攻 学士課程"),
+     education_title(("Bachelor’s degree", "学士課程"), ("Financial Management", "財務管理")),
      ("Glorious Sun School of Business and Management, Donghua University", "東華大学 旭日工商管理学院")),
 ]
 APPOINTMENTS = [
