@@ -114,9 +114,10 @@ def cv_date(value, lang):
 
 def cv_rows(rows, lang):
     entries = []
-    for date, title, institution in rows:
+    for date, title, institution, *details in rows:
+        description = "".join(f'<p class="cv-detail">{prose(item, lang)}</p>' for item in details)
         entries.append(f'<li><div><strong>{escape(local(title, lang))}</strong>'
-                       f'<span>{escape(local(institution, lang))}</span></div>'
+                       f'<span>{escape(local(institution, lang))}</span>{description}</div>'
                        f'<span class="cv-date">{cv_date(date, lang)}</span></li>')
     return f'<ul class="cv-rows">{"".join(entries)}</ul>'
 
@@ -198,9 +199,11 @@ def render(lang, edition_query=""):
         for year, society in p.MEMBERSHIPS
     )
     experience = [
-        ("appointments", tr("Research, teaching &amp; service", "研究・教育・学内業務"), cv_rows(p.APPOINTMENTS, lang)),
+        ("teaching", tr("Teaching experience", "教育歴"), cv_rows(p.TEACHING, lang)),
+        ("appointments", tr("Research &amp; university service", "研究・学内業務"), cv_rows(p.APPOINTMENTS, lang)),
         ("awards", tr("Fellowships &amp; awards", "奨学金・受賞歴"), cv_rows(p.AWARDS, lang)),
         ("memberships", tr("Academic memberships", "所属学会"), f'<ul class="memberships">{memberships}</ul>'),
+        ("languages", tr("Languages", "語学資格"), f'<p>{escape(local(p.LANGUAGE_QUALIFICATION, lang))}</p>'),
         ("other-experience", tr("Other professional experience", "その他の職歴"), cv_rows(p.OTHER_EXPERIENCE, lang)),
     ]
     background = "".join(f'<section class="cv-group" id="{sid}" aria-labelledby="{sid}-heading">'

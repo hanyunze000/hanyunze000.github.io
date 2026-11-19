@@ -97,8 +97,10 @@ def cv_date(value):
 
 def cv_table(rows):
     data = []
-    for date, title, institution in rows:
-        record = f"<b>{escape(en(title))}</b><br/>{escape(en(institution))}"
+    for date, title, institution, *details in rows:
+        lines = [f"<b>{escape(en(title))}</b>", escape(en(institution))]
+        lines.extend(escape(en(item)) for item in details)
+        record = "<br/>".join(lines)
         data.append([para(record), cv_date(date)])
     table = Table(data, colWidths=[348, 144], hAlign="LEFT")
     table.setStyle(TableStyle([
@@ -142,7 +144,9 @@ def build():
     story.extend(paper_flowables(item) for item in p.PUBLICATIONS)
     story.extend([PageBreak(), paper_section("Working papers", p.WORKING_PAPERS)])
     story.extend(paper_flowables(item) for item in p.WORKING_PAPERS)
-    story.extend([PageBreak(), para("Research, teaching &amp; service", "section"), cv_table(p.APPOINTMENTS),
+    story.extend([para("Teaching experience", "section"), cv_table(p.TEACHING),
+                  para("Languages", "section"), para(escape(en(p.LANGUAGE_QUALIFICATION)))])
+    story.extend([PageBreak(), para("Research &amp; university service", "section"), cv_table(p.APPOINTMENTS),
                   para("Research projects", "section")])
     for project in p.FIELDWORK:
         story.append(KeepTogether([

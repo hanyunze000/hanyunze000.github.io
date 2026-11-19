@@ -149,7 +149,7 @@ FIELDWORK = [
     },
 ]
 
-# Each CV row consists of a date, a qualification or role, and an institution.
+# Each CV row lists the date, title and institution, followed by any description.
 # A date range with a note gives its start, end and note in each language.
 def education_title(level, field):
     level_en, level_ja = level
@@ -173,11 +173,17 @@ EDUCATION = [
      education_title(("Bachelor’s degree", "学士課程"), ("Financial Management", "財務管理")),
      ("Glorious Sun School of Business and Management, Donghua University", "東華大学 旭日工商管理学院")),
 ]
+TEACHING = [
+    (("2022 – present", "2022年 – 現在"),
+     ("Economics instructor", "経済学講師"), ("New Oriental", "新東方（New Oriental）"),
+     ("I teach microeconomics and econometrics and advise students on writing research proposals.",
+      ("ミクロ経済学と計量経済学の授業を担当し、", "研究計画書の作成を指導しています。"))),
+    (("May – Sep 2024", "2024年5月 – 9月"),
+     ("Teaching assistant", "ティーチング・アシスタント"), ("Kyoto University", "京都大学")),
+]
 APPOINTMENTS = [
     (("Jan 2024 – present", "2024年1月 – 現在"),
      ("Part-time research assistant", "非常勤研究助手"), JICA),
-    (("May – Sep 2024", "2024年5月 – 9月"),
-     ("Teaching assistant", "ティーチング・アシスタント"), ("Kyoto University", "京都大学")),
     (("Oct 2023", "2023年10月"),
      ("New student orientation tutor", "新入生チューター"), ("Kyoto University", "京都大学")),
     (("Apr – Sep 2023", "2023年4月 – 9月"),
@@ -200,6 +206,7 @@ MEMBERSHIPS = [
     ("2025", ("East Asian Economic Association", "東アジア経済学会（EAEA）")),
     ("2025", ("Agricultural Economics Society of Japan", "日本農業経済学会")),
 ]
+LANGUAGE_QUALIFICATION = ("Japanese-Language Proficiency Test (JLPT) N1", "日本語能力試験（JLPT）N1")
 OTHER_EXPERIENCE = [
     (("Aug 2024 – present", "2024年8月 – 現在"),
      ("Contract photographer", "契約フォトグラファー"), ("Visual China Group (VCG)", "Visual China Group（VCG）")),

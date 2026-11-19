@@ -131,6 +131,7 @@ summary { width: fit-content; cursor: pointer; color: var(--green); }
 .cv-rows li + li { margin-top: 22px; }
 .cv-rows strong { display: block; color: var(--ink); font-weight: 600; }
 .cv-rows li div > span { display: block; color: var(--muted); }
+.cv-detail { margin-top: 4px; font-size: 16px; }
 .cv-date { flex: 0 0 auto; font-size: 16px; text-align: right; }
 .date-range { display: inline-grid; grid-template-columns: auto auto; column-gap: .25em; text-align: start; white-space: nowrap; }
 .date-range small { grid-column: 2; font-size: .9em; line-height: 1.3; }
