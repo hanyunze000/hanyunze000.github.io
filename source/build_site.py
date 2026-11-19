@@ -28,7 +28,8 @@ def prose(value, lang):
     text = local(value, lang)
     if isinstance(text, str):
         return escape(text)
-    return "<wbr>".join(f'<span class="phrase">{escape(phrase)}</span>' for phrase in text)
+    separator = " " if lang == "en" else "<wbr>"
+    return separator.join(f'<span class="phrase">{escape(phrase)}</span>' for phrase in text)
 
 
 def new_tab_attrs(url, lang):
@@ -61,10 +62,11 @@ def meetings(paper, lang):
         date = escape(local(meeting["date"], lang))
         note = ""
         if "note" in meeting:
-            note = f' <span class="meeting-note">({escape(local(meeting["note"], lang))})</span>'
+            role = escape(local(meeting["note"], lang))
+            note = '<span class="meeting-note">' + local((f" ({role})", f"（{role}）"), lang) + '</span>'
         earlier = ""
         if "earlier_title" in meeting:
-            label = local(("Title on the program", "プログラム上の演題"), lang)
+            label = local(("Title on the program", "プログラム掲載時の題目"), lang)
             earlier = (f'<details class="early-title"><summary>{label}</summary>'
                        f'<p lang="en">{escape(meeting["earlier_title"])}</p></details>')
         rows.append(f'<li><span class="meeting-date">{date}</span>'
@@ -89,7 +91,7 @@ def paper_entry(paper, lang):
 
     if published:
         detail_text = f'<p class="paper-summary">{prose(paper["summary"], lang)}</p>'
-        details += f'<details class="disclosure"><summary>{tr("Research summary", "研究概要")}</summary>{detail_text}</details>'
+        details += f'<details class="disclosure"><summary>{tr("Research summary", "論文概要")}</summary>{detail_text}</details>'
     if paper.get("meetings"):
         label = local(p.presentation_heading(paper["meetings"]), lang)
         details += f'<details class="disclosure"><summary>{label}</summary>{meetings(paper, lang)}</details>'
@@ -158,8 +160,12 @@ def render(lang, edition_query=""):
 
     alt_lang = tr("ja", "en")
     name, native = (p.NAME, p.NAME_JA) if lang == "en" else (p.NAME_JA, p.NAME)
+    interests = prose((
+        ("My research interests are", "development economics", "and agricultural economics."),
+        ("専門は開発経済学と", "農業経済学です。"),
+    ), lang)
     description = tr("Yunze Han at Kyoto University. Publications, working papers, education, and research projects.",
-                     "京都大学の韓運澤の個人ページ。学歴、論文、ワーキングペーパー、研究プロジェクトを掲載しています。")
+                     "京都大学大学院農学研究科の韓運澤の個人サイト。開発経済学・農業経済学の論文と研究プロジェクトを紹介しています。")
     info = {"@context": "https://schema.org", "@type": "Person", "name": p.NAME,
             "alternateName": ["韩运泽", p.NAME_JA],
             "affiliation": {"@type": "CollegeOrUniversity", "name": "Kyoto University"},
@@ -176,8 +182,8 @@ def render(lang, edition_query=""):
     education = cv_section("education", labels["education"], cv_rows(p.EDUCATION, lang))
 
     project_intro = prose((
-        f"I work on project evaluations at the {p.JICA[0]}.",
-        (f"{p.JICA[1]}で、", "開発事業の効果を検証しています。"),
+        f"At the {p.JICA[0]}, I help evaluate agricultural development projects.",
+        (f"{p.JICA[1]}で、", "農業開発事業の評価に取り組んでいます。"),
     ), lang)
     projects = []
     for project, sid in zip(p.FIELDWORK, ("sri-lanka", "uganda")):
@@ -192,7 +198,7 @@ def render(lang, edition_query=""):
     )
     experience = [
         ("appointments", tr("Research, teaching &amp; service", "研究・教育・学内業務"), cv_rows(p.APPOINTMENTS, lang)),
-        ("awards", tr("Fellowships &amp; awards", "奨学金・受賞"), cv_rows(p.AWARDS, lang)),
+        ("awards", tr("Fellowships &amp; awards", "奨学金・受賞歴"), cv_rows(p.AWARDS, lang)),
         ("memberships", tr("Academic memberships", "所属学会"), f'<ul class="memberships">{memberships}</ul>'),
         ("other-experience", tr("Other professional experience", "その他の職歴"), cv_rows(p.OTHER_EXPERIENCE, lang)),
     ]
@@ -228,6 +234,7 @@ def render(lang, edition_query=""):
       <div class="profile-copy">
         <h1 id="profile-name">{name}<span class="other-name" lang="{alt_lang}">{native}</span></h1>
         <div id="contact" class="contact">
+          <p class="research-interests">{interests}</p>
           <p><span class="contact-label">{tr("Email", "メール")}</span> <span class="email-address" dir="ltr">{p.MASKED_EMAIL}</span></p>
           <p class="contact-hint">{tr("Replace * with @ when emailing.", "送信時は * を @ に置き換えてください。")}</p>
         </div>

@@ -8,7 +8,7 @@ RESEARCHMAP = "https://researchmap.jp/yunzehan"
 
 def presentation_heading(meetings):
     count = len(meetings)
-    return f"Presentations of this paper ({count})", f"本論文の研究発表（{count}件）"
+    return f"Presentations of this paper ({count})", f"この論文の報告先（{count}件）"
 
 
 PUBLICATIONS = [
@@ -22,8 +22,8 @@ PUBLICATIONS = [
         "doi": "10.1111/boer.70090",
         "summary": (
             "Using data from 2,872 counties in China, we find that property-related street and neighborhood crime fell in counties where Taobao Villages emerged.",
-            ("中国の2,872県のデータを用いて、", "淘宝村が形成された県では、", "路上や近隣での",
-             "財産犯罪が", "減少したことを示しました。"),
+            ("中国の2,872県のデータを分析したところ、", "淘宝村が形成された県では、",
+             "路上や住宅地での", "財産犯罪が減少しました。"),
         ),
     },
     {
@@ -35,19 +35,18 @@ PUBLICATIONS = [
         "year": "2026",
         "doi": "10.1186/s13561-026-00833-w",
         "summary": (
-            "In rural China, public health insurance enrollment was associated with higher caloric intake. People who consumed more calories also earned more per working day in the following survey wave.",
-            ("中国農村では、", "公的医療保険の加入者ほど", "摂取カロリーが高く、",
-             "また、摂取カロリーが高い人ほど", "次回調査時の", "労働日当たり所得が高いという",
-             "関連が見られました。"),
+            "In rural China, participants in the New Rural Cooperative Medical Scheme consumed more calories than nonparticipants. Higher caloric intake was also associated with higher earnings per working day the following year.",
+            ("中国農村部では、", "新型農村合作医療制度の加入者は", "非加入者よりも摂取カロリーが高く、",
+             "摂取カロリーが高い人ほど、", "翌年の就労日1日当たりの所得も", "高い傾向にありました。"),
         ),
         "meetings": [
             {
-                "name": ("Annual Conference of the Agricultural Economics Society of Japan", "日本農業経済学会年度大会"),
+                "name": ("2025 Annual Conference of the Agricultural Economics Society of Japan", "2025年度日本農業経済学会大会"),
                 "date": ("Mar 2025", "2025年3月"),
                 "url": "https://researchmap.jp/yunzehan/presentations/55076457",
             },
             {
-                "name": ("Kyoto Development Economic Research (KDER) Student Workshop", "京都大学 KDER 学生ワークショップ"),
+                "name": "Kyoto Development Economic Research (KDER) Student Workshop",
                 "date": ("Feb 2025", "2025年2月"),
                 "url": "https://www.econ.kyoto-u.ac.jp/en/about/seminars/42094/",
             },
@@ -62,14 +61,14 @@ WORKING_PAPERS = [
         "authors": [NAME, "Kei Kajisa"],
         "meetings": [
             {
-                "name": ("Autumn Meeting of the Japanese Economic Association", "日本経済学会秋季大会"),
+                "name": ("Japanese Economic Association 2026 Autumn Meeting", "日本経済学会2026年度秋季大会"),
                 "date": ("Sep 2026", "2026年9月"),
                 "url": "https://researchmap.jp/yunzehan/presentations/55076526",
             },
             {
                 "name": ("1st Annual Conference of the Community Mechanism Research Association", "共同体メカニズム研究学会 第1回大会"),
                 "date": ("Jun 2026", "2026年6月"),
-                "note": ("Session chair", "座長を兼任"),
+                "note": ("Session chair", "座長兼任"),
                 "url": "https://researchmap.jp/yunzehan/presentations/55076516",
             },
             {
@@ -127,25 +126,25 @@ JICA = (
 FIELDWORK = [
     {
         "country": ("Sri Lanka", "スリランカ"),
-        "title": ("Walawe Left Bank Upgrading and Extension Project", ("ワラウェ川左岸", "灌漑改修・拡張事業")),
+        "title": ("Walawe Left Bank Irrigation Upgrading and Extension Project", ("ワラウェ川左岸", "灌漑改修拡張事業")),
         "detail": (
             "I managed field data collection covering about 900 households, 300 agricultural markets, "
             "200 farmer organizations, and more than 100 irrigation canals. I also organized public goods, "
             "ultimatum, and trust games as part of the project evaluation.",
-            ("事業評価のため、", "約900世帯、", "約300の農産物市場、", "約200の農民組織、",
-             "100本を超える用水路を対象とした", "現地調査を管理しました。",
-             "また、公共財ゲーム、", "最後通牒ゲーム、", "信頼ゲームを実施しました。"),
+            ("約900世帯、", "約300の農産物市場、", "約200の農民組織、", "100本を超える用水路を対象に、",
+             "現地でのデータ収集を取りまとめました。", "事業評価の一環として、", "公共財ゲーム、",
+             "最後通牒ゲーム、", "信頼ゲームの実施も担当しました。"),
         ),
     },
     {
         "country": ("Uganda", "ウガンダ"),
-        "title": ("Northern Uganda Farmers’ Livelihood Improvement Project", ("ウガンダ北部", "農家生計向上プロジェクト")),
+        "title": ("Northern Uganda Farmers’ Livelihood Improvement Project", ("北部ウガンダ", "生計向上支援プロジェクト")),
         "detail": (
             "Working remotely, I analyzed baseline data and helped design the random assignment for the evaluation. "
             "I also supported the analysis of farm income, production, and other indicators of household livelihoods.",
-            ("遠隔で", "ベースラインデータを分析し、", "効果検証のための",
-             "無作為割付の設計に携わりました。", "農家の所得、生産、生計に関する",
-             "指標の分析も担当しました。"),
+            ("ベースライン調査のデータを遠隔で分析し、", "効果検証に用いる",
+             "無作為割付の設計に参加しました。", "農家の所得や生産など、",
+             "生計に関する指標の分析も支援しました。"),
         ),
     },
 ]
@@ -154,10 +153,10 @@ FIELDWORK = [
 # A date range with a note gives its start, end and note in each language.
 EDUCATION = [
     ((("Oct 2024", "Sep 2027", "(expected)"), ("2024年10月", "2027年9月", "（予定）")),
-     ("Doctoral program in Natural Resource Economics", "生物資源経済学専攻 博士後期課程"),
+     ("Doctoral program, Division of Natural Resource Economics", "生物資源経済学専攻 博士後期課程"),
      ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
     (("Oct 2022 – Sep 2024", "2022年10月 – 2024年9月"),
-     ("Master’s degree in Natural Resource Economics", "生物資源経済学専攻 修士課程"),
+     ("Master’s degree, Division of Natural Resource Economics", "生物資源経済学専攻 修士課程"),
      ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
     (("Sep 2017 – Jun 2021", "2017年9月 – 2021年6月"),
      ("Bachelor’s degree in Financial Management", "財務管理専攻 学士課程"),
@@ -175,10 +174,10 @@ APPOINTMENTS = [
 ]
 AWARDS = [
     (("Oct 2024 – Sep 2027", "2024年10月 – 2027年9月"),
-     ("DoGS Fellowship, JST SPRING", "大学院教育支援機構奨励研究員（JST SPRING）"),
+     ("DoGS Fellow (JST SPRING)", "大学院教育支援機構奨励研究員（JST SPRING）"),
      ("Division of Graduate Studies, Kyoto University", "京都大学大学院教育支援機構")),
     (("Nov 2022", "2022年11月"),
-     ("MEXT Honors Scholarship", "文部科学省外国人留学生学習奨励費"),
+     ("MEXT Honors Scholarship for Privately Financed International Students", "文部科学省外国人留学生学習奨励費"),
      ("Japan Student Services Organization (JASSO)", "日本学生支援機構（JASSO）")),
     (("Jan 2021", "2021年1月"),
      ("Outstanding Thesis Award", "優秀論文賞"), ("Donghua University", "東華大学")),
@@ -187,10 +186,10 @@ MEMBERSHIPS = [
     ("2026", ("Japanese Association for Development Economics", "開発経済学会")),
     ("2026", ("Community Mechanism Research Association", "共同体メカニズム研究学会")),
     ("2026", ("Japanese Economic Association", "日本経済学会")),
-    ("2025", "East Asian Economic Association"),
+    ("2025", ("East Asian Economic Association", "東アジア経済学会（EAEA）")),
     ("2025", ("Agricultural Economics Society of Japan", "日本農業経済学会")),
 ]
 OTHER_EXPERIENCE = [
     (("Aug 2024 – present", "2024年8月 – 現在"),
-     ("Contract photographer", "契約フォトグラファー"), ("Visual China Group", "Visual China Group（視覚中国）")),
+     ("Contract photographer", "契約フォトグラファー"), ("Visual China Group (VCG)", "Visual China Group（VCG）")),
 ]
