@@ -45,7 +45,8 @@ def para(text, kind="body"):
 
 
 def paper_section(title, papers):
-    return para(f'{title} <font name="Helvetica" size="10.5" color="{MUTED}">({len(papers)})</font>', "section")
+    count_size = STYLES["section"].fontSize * 0.9
+    return para(f'{title} <font size="{count_size:g}" color="{MUTED}">({len(papers)})</font>', "section")
 
 
 def link(label, url):
@@ -78,14 +79,31 @@ def paper_flowables(item):
     return KeepTogether(lines)
 
 
+def cv_date(value):
+    date = en(value)
+    if isinstance(date, str):
+        return para(escape(date), "date")
+    start, end, note = date
+    font = STYLES["date"]
+    cells = [[f"{start} – ", end], ["", note]]
+    return Table(cells, hAlign="RIGHT", style=TableStyle([
+        ("FONT", (0, 0), (-1, -1), font.fontName, font.fontSize, font.leading),
+        ("TEXTCOLOR", (0, 0), (-1, -1), font.textColor),
+        ("FONTSIZE", (1, 1), (1, 1), font.fontSize * 0.9),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+
+
 def cv_table(rows):
     data = []
     for date, title, institution in rows:
         record = f"<b>{escape(en(title))}</b><br/>{escape(en(institution))}"
-        data.append([para(record), para(escape(en(date)), "date")])
+        data.append([para(record), cv_date(date)])
     table = Table(data, colWidths=[348, 144], hAlign="LEFT")
     table.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("ALIGN", (1, 0), (1, -1), "RIGHT"),
         ("LEFTPADDING", (0, 0), (-1, -1), 0),
         ("RIGHTPADDING", (0, 0), (-1, -1), 0),
         ("TOPPADDING", (0, 0), (-1, -1), 1),

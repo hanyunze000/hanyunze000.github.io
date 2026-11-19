@@ -151,8 +151,9 @@ FIELDWORK = [
 ]
 
 # Each CV row consists of a date, a qualification or role, and an institution.
+# A date range with a note gives its start, end and note in each language.
 EDUCATION = [
-    (("2024 – Sep 2027 (expected)", "2024年 – 2027年9月（予定）"),
+    ((("Oct 2024", "Sep 2027", "(expected)"), ("2024年10月", "2027年9月", "（予定）")),
      ("Doctoral program in Natural Resource Economics", "生物資源経済学専攻 博士後期課程"),
      ("Graduate School of Agriculture, Kyoto University", "京都大学大学院農学研究科")),
     (("Oct 2022 – Sep 2024", "2022年10月 – 2024年9月"),

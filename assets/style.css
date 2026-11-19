@@ -79,8 +79,8 @@ ul { list-style: none; padding: 0; }
 .publications { margin-top: 30px; }
 .subsection-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 22px; flex-wrap: wrap; }
 .subsection-head h3, .working-papers h3 { font-size: clamp(27px,2.45vw,35px); letter-spacing: -.025em; }
-.paper-key, .count { color: var(--muted); font: 400 15px/1.4 var(--sans); }
-.count { margin-inline-start: .2em; }
+.paper-key { color: var(--muted); font: 400 15px/1.4 var(--sans); }
+.count { color: var(--muted); font-size: .9em; white-space: nowrap; }
 .paper { padding-block: 28px 31px; }
 .paper + .paper { border-top: 1px solid var(--rule); }
 .paper-line { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: clamp(26px,6vw,88px); align-items: start; }
@@ -131,6 +131,8 @@ summary { width: fit-content; cursor: pointer; color: var(--green); }
 .cv-rows strong { display: block; color: var(--ink); font-weight: 600; }
 .cv-rows li div > span { display: block; color: var(--muted); }
 .cv-date { flex: 0 0 auto; font-size: 16px; text-align: right; }
+.date-range { display: inline-grid; grid-template-columns: auto auto; column-gap: .25em; text-align: start; white-space: nowrap; }
+.date-range small { grid-column: 2; font-size: .9em; line-height: 1.3; }
 .memberships li { display: grid; grid-template-columns: minmax(0,1fr) 7em; gap: 4px clamp(30px,5vw,78px); padding-block: 13px; }
 .memberships li:first-child { padding-top: 0; }
 .memberships li + li { border-top: 1px solid #e0e5dd; }

@@ -100,12 +100,21 @@ def paper_entry(paper, lang):
             f'<div class="paper-details">{details}</div></article>')
 
 
+def cv_date(value, lang):
+    date = local(value, lang)
+    if isinstance(date, str):
+        return escape(date)
+    start, end, note = map(escape, date)
+    return (f'<span class="date-range"><span>{start} –</span> <span>{end}</span>'
+            f' <small>{note}</small></span>')
+
+
 def cv_rows(rows, lang):
     entries = []
     for date, title, institution in rows:
         entries.append(f'<li><div><strong>{escape(local(title, lang))}</strong>'
                        f'<span>{escape(local(institution, lang))}</span></div>'
-                       f'<span class="cv-date">{escape(local(date, lang))}</span></li>')
+                       f'<span class="cv-date">{cv_date(date, lang)}</span></li>')
     return f'<ul class="cv-rows">{"".join(entries)}</ul>'
 
 
