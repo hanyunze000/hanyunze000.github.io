@@ -12,9 +12,10 @@ from photographs import ROWS as PHOTO_ROWS
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def asset(name):
-    version = sha256((ROOT / "assets" / name).read_bytes()).hexdigest()[:8]
-    return f"assets/{name}?v={version}"
+def asset(name, *, directory="assets"):
+    path = Path(directory) / name
+    version = sha256((ROOT / path).read_bytes()).hexdigest()[:8]
+    return f"{path.as_posix()}?v={version}"
 
 
 def local(value, lang):
@@ -216,7 +217,8 @@ def render(lang, edition_query=""):
   <link rel="alternate" hreflang="en" href="index.html">
   <link rel="alternate" hreflang="ja" href="ja.html">
   <link rel="alternate" hreflang="x-default" href="index.html">
-  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="icon" href="{asset('favicon.png')}" type="image/png" sizes="128x128">
+  <link rel="icon" href="{asset('favicon.ico', directory='.')}" type="image/x-icon" sizes="16x16 32x32 48x48 64x64">
   <link rel="stylesheet" href="{asset("style.css")}">
   <script src="{asset("language.js")}" defer></script>
   <script src="{asset("gallery.js")}" defer></script>
